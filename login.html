@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login — FitHub Personal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-card: #161616;
+    --bg-input: #1f1f1f;
+    --line: #262626;
+    --text: #f5f5f0;
+    --muted: #a3a3a3;
+    --lime: #bef264;
+    --red: #fb7185;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(190,242,100,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(190,242,100,0.05) 0%, transparent 40%),
+      var(--bg);
+  }
+  /* ============== HEADER ============== */
+  header {
+    padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .brand-mark {
+    width: 36px; height: 36px;
+    background: var(--lime);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: #0a0a0a;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .brand-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+  }
+  .brand-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--lime);
+    padding: 3px 8px;
+    border: 1px solid var(--lime);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .back-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--text); }
+
+  /* ============== MAIN ============== */
+  main {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 24px 64px;
+  }
+  .login-card {
+    width: 100%; max-width: 440px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 36px 32px 32px;
+  }
+  .label-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--lime);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .label-mono::before {
+    content: ''; display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%; background: var(--lime);
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* ============== FORM ============== */
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--lime);
+  }
+  .field input[type="text"].code {
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--lime);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .msg {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+  }
+  .msg.error {
+    background: rgba(251,113,133,0.1);
+    border: 1px solid rgba(251,113,133,0.3);
+    color: var(--red);
+    display: block;
+  }
+  .msg.info {
+    background: rgba(190,242,100,0.08);
+    border: 1px solid rgba(190,242,100,0.2);
+    color: var(--lime);
+    display: block;
+  }
+
+  /* ============== FOOTER NOTE ============== */
+  .help {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .help a {
+    color: var(--lime);
+    text-decoration: none;
+  }
+  .help a:hover { text-decoration: underline; }
+
+  /* ============== LOADING ============== */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(10,10,10,0.3);
+    border-top-color: #0a0a0a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 480px) {
+    header { padding: 16px 20px; }
+    .login-card { padding: 28px 22px; }
+    h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="brand">
+    <div class="brand-mark">F</div>
+    <div class="brand-name">FITHUB</div>
+    <div class="brand-tag">Personal</div>
+  </a>
+  <a href="index.html" class="back-link">← Voltar</a>
+</header>
+
+<main>
+  <div class="login-card">
+    <div class="label-mono">ACESSO_RESTRITO</div>
+    <h1>ENTRAR.</h1>
+    <p class="subtitle">Use o email e código de acesso enviados após sua aprovação.</p>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required autocomplete="email"
+               placeholder="seu@email.com" autofocus>
+      </div>
+
+      <div class="field">
+        <label for="codigo">Código de acesso</label>
+        <input type="text" id="codigo" name="codigo" class="code" required
+               autocomplete="off" placeholder="FH-001" maxlength="20">
+      </div>
+
+      <button type="submit" class="btn-primary" id="submitBtn">
+        ENTRAR →
+      </button>
+
+      <div class="msg" id="msg"></div>
+    </form>
+
+    <div class="help">
+      Ainda não tem acesso?<br>
+      <a href="index.html#cadastro">Solicitar cadastro como personal</a>
+    </div>
+  </div>
+</main>
+
+<script src="api.js"></script>
+<script>
+  // Se já está logado, manda direto pro app
+  if (Session.isLoggedIn()) {
+    window.location.replace('app.html');
+  }
+
+  const form = document.getElementById('loginForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const msgEl = document.getElementById('msg');
+
+  function showMsg(text, type = 'error') {
+    msgEl.className = `msg ${type}`;
+    msgEl.textContent = text;
+  }
+  function clearMsg() {
+    msgEl.className = 'msg';
+    msgEl.textContent = '';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearMsg();
+
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const codigo = document.getElementById('codigo').value.trim().toUpperCase();
+
+    if (!email || !codigo) {
+      showMsg('Preencha email e código.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Verificando...';
+
+    try {
+      const res = await API.login(email, codigo);
+      Session.save(res.personal);
+      showMsg('Bem-vindo, ' + (res.personal.nome || 'personal') + '. Redirecionando...', 'info');
+      setTimeout(() => window.location.replace('app.html'), 600);
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'ENTRAR →';
+      showMsg(err.message || 'Falha ao entrar. Verifique email e código.');
+    }
+  });
+</script>
+
+</body>
+</html>
