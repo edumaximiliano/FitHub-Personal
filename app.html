@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<meta name="apple-mobile-web-app-title" content="FitHub">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>FitHub Personal — Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +39,8 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100%;
   }
   button { font-family: inherit; cursor: pointer; }
   input, select, textarea { font-family: inherit; }
@@ -364,7 +373,7 @@
   }
   .kpi-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
     gap: 12px; margin-bottom: 24px;
   }
   .kpi {
@@ -412,14 +421,17 @@
   /* Calendar grid */
   .calendar {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 6px;
+    width: 100%;
   }
   .cal-head {
     text-align: center;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; color: var(--muted);
     padding: 6px 0;
+    min-width: 0;
+    overflow: hidden;
   }
   .cal-day {
     aspect-ratio: 1;
@@ -430,6 +442,8 @@
     font-size: 12px;
     color: var(--muted-2);
     border: 1px solid transparent;
+    min-width: 0;
+    overflow: hidden;
   }
   .cal-day.empty { background: transparent; }
   .cal-day.trained {
@@ -446,16 +460,18 @@
   /* Bar chart */
   .bar-row {
     display: grid;
-    grid-template-columns: 110px 1fr 40px;
+    grid-template-columns: 110px minmax(0, 1fr) 40px;
     gap: 10px; align-items: center;
     margin-bottom: 6px;
     font-size: 12px;
+    min-width: 0;
   }
-  .bar-label { color: var(--text); }
+  .bar-label { color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bar-track {
     background: var(--bg-input);
     height: 18px; border-radius: 3px;
     position: relative; overflow: hidden;
+    min-width: 0;
   }
   .bar-fill {
     height: 100%;
@@ -717,6 +733,133 @@
     overflow-y: auto;
   }
 
+  /* ============== RANGE STRIP / TIMELINE ============== */
+  .strip {
+    display: flex; flex-wrap: wrap; gap: 3px;
+  }
+  .strip-day {
+    background: var(--bg-input);
+    color: var(--muted-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 0;
+    width: 28px;
+    text-align: center;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ============== TREINO LIST (no relatório) ============== */
+  .treino-list {
+    display: flex; flex-direction: column; gap: 4px;
+    max-height: 320px; overflow-y: auto;
+  }
+  .treino-line {
+    display: grid;
+    grid-template-columns: 130px 12px 1fr 1.5fr;
+    gap: 8px; align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    min-width: 0;
+  }
+  .treino-line:last-child { border-bottom: none; }
+  .treino-date {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .treino-where {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .treino-musc {
+    color: var(--muted);
+    font-size: 11px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ============== PRINT HEADER (visível só em PDF) ============== */
+  .print-header { display: none; }
+
+  /* ============== PRINT MODE (PDF export) ============== */
+  @media print {
+    @page { size: A4; margin: 14mm; }
+
+    html, body {
+      background: #ffffff !important;
+      color: #0a0a0a !important;
+      overflow: visible !important;
+    }
+    .topbar, .tabbar, .section-head, .report-controls,
+    .modal-overlay, .toast-wrap, .loading-overlay {
+      display: none !important;
+    }
+    main { padding: 0 !important; max-width: 100% !important; }
+    .section { display: none !important; }
+    .section#section-relatorios { display: block !important; }
+
+    .print-header {
+      display: block !important;
+      border-bottom: 2px solid #0a0a0a;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .ph-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: #0a0a0a;
+    }
+    .ph-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    /* Todos os painéis e cards: fundo branco, borda cinza, texto preto */
+    .kpi, .panel {
+      background: #ffffff !important;
+      border: 1px solid #d4d4d4 !important;
+      color: #0a0a0a !important;
+      page-break-inside: avoid;
+      box-shadow: none !important;
+    }
+    .kpi-label, .panel-title, .kpi-sub {
+      color: #6b7280 !important;
+    }
+    .kpi-value { color: #4d7c0f !important; } /* lime mais escuro pra contraste em impressão */
+    .kpi-value .unit { color: #6b7280 !important; }
+
+    .bar-track { background: #f3f4f6 !important; }
+    .bar-fill { background: #65a30d !important; } /* lime escuro */
+    .bar-label, .bar-count { color: #0a0a0a !important; }
+
+    .cal-day {
+      background: #f9fafb !important;
+      color: #6b7280 !important;
+      border-color: #e5e7eb !important;
+    }
+    .cal-day.trained {
+      background: #65a30d !important;
+      color: #ffffff !important;
+    }
+    .cal-day.today { border-color: #65a30d !important; }
+    .cal-head { color: #6b7280 !important; }
+
+    .gym-row { border-bottom-color: #e5e7eb !important; }
+    .gym-row-name { color: #0a0a0a !important; }
+    .gym-row-count { color: #6b7280 !important; }
+
+    .treino-line { border-bottom-color: #e5e7eb !important; color: #0a0a0a !important; }
+    .treino-date, .treino-musc { color: #6b7280 !important; }
+    .treino-list { max-height: none !important; overflow: visible !important; }
+
+    .strip-day { background: #f3f4f6 !important; color: #6b7280 !important; }
+
+    .empty { display: none !important; }
+  }
+
   /* ============== RESPONSIVE ============== */
   @media (max-width: 720px) {
     .topbar-inner { padding: 12px 16px; }
@@ -769,6 +912,25 @@
     .bar-track { min-width: 0; }
 
     .gym-row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Treino-line vira layout 2 linhas em mobile */
+    .treino-line {
+      grid-template-columns: 110px 1fr;
+      grid-template-rows: auto auto;
+      gap: 4px 8px;
+      align-items: start;
+    }
+    .treino-line .gym-dot { display: none; }
+    .treino-line .treino-date { grid-column: 1; grid-row: 1; }
+    .treino-line .treino-where { grid-column: 2; grid-row: 1; font-weight: 600; }
+    .treino-line .treino-musc {
+      grid-column: 1 / -1; grid-row: 2;
+      white-space: normal;
+      font-size: 10px;
+    }
+
+    /* Strip-day: garante quebra ordenada */
+    .strip-day { width: 22px; font-size: 9px; }
   }
 </style>
 </head>
@@ -856,7 +1018,7 @@
     <div class="section-head">
       <div>
         <h2 class="section-title">RELATÓRIOS.</h2>
-        <div class="section-sub">Visão mensal por aluno.</div>
+        <div class="section-sub">Visão por aluno ou geral, em mês ou período customizado.</div>
       </div>
     </div>
     <div class="report-controls">
@@ -865,10 +1027,26 @@
         <select class="select" id="reportAluno"></select>
       </div>
       <div class="control-group">
+        <label>Período</label>
+        <select class="select" id="reportPeriodMode">
+          <option value="month">Mês inteiro</option>
+          <option value="range">Período customizado</option>
+        </select>
+      </div>
+      <div class="control-group" id="reportMonthGroup">
         <label>Mês</label>
         <select class="select" id="reportMonth"></select>
       </div>
-      <button class="btn btn-secondary" id="exportTextBtn">Exportar texto</button>
+      <div class="control-group" id="reportFromGroup" style="display:none">
+        <label>De</label>
+        <input type="date" class="select" id="reportFrom">
+      </div>
+      <div class="control-group" id="reportToGroup" style="display:none">
+        <label>Até</label>
+        <input type="date" class="select" id="reportTo">
+      </div>
+      <button class="btn btn-secondary" id="exportTextBtn">Texto</button>
+      <button class="btn btn-primary" id="exportPdfBtn">Exportar PDF</button>
     </div>
     <div id="reportContent"></div>
   </section>
@@ -1622,21 +1800,16 @@ $('#ac_delete').addEventListener('click', async () => {
 
 /* ===================== RELATÓRIOS ===================== */
 function renderReportsTab() {
-  // popula selects
+  // popula seletor de aluno (com opção "Todos")
   const alunoSel = $('#reportAluno');
-  if (!state.alunos.length) {
-    $('#reportContent').innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">📊</div>
-        <div class="empty-title">Sem dados ainda</div>
-        <div class="empty-sub">Cadastre alunos e registre treinos pra ver relatórios.</div>
-      </div>`;
-    return;
-  }
-  if (alunoSel.options.length !== state.alunos.length) {
-    alunoSel.innerHTML = state.alunos.map(a => `<option value="${a.ID}">${escapeHTML(a.Nome)}</option>`).join('');
+  const wantOptions = 1 + state.alunos.length;
+  if (alunoSel.options.length !== wantOptions) {
+    alunoSel.innerHTML =
+      `<option value="">— Todos os alunos —</option>` +
+      state.alunos.map(a => `<option value="${a.ID}">${escapeHTML(a.Nome)}</option>`).join('');
   }
 
+  // popula seletor de mês (últimos 12)
   const monthSel = $('#reportMonth');
   if (!monthSel.options.length) {
     const months = [];
@@ -1649,70 +1822,280 @@ function renderReportsTab() {
     monthSel.innerHTML = months.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
   }
 
-  renderReportContent();
-}
-function renderReportContent() {
-  const alunoId = $('#reportAluno').value;
-  const month = $('#reportMonth').value;
-  if (!alunoId || !month) return;
-  const aluno = state.alunos.find(a => String(a.ID) === String(alunoId));
-  if (!aluno) return;
-
-  const [y, m] = month.split('-').map(Number);
-  const treinosNoMes = state.treinos.filter(t =>
-    String(t.AlunoId) === String(alunoId) &&
-    String(t.Data || '').startsWith(month)
-  );
-
-  // KPIs
-  const diasTreinados = new Set(treinosNoMes.map(t => t.Data)).size;
-  const daysInMonth = new Date(y, m, 0).getDate();
-  const today = new Date();
-  const isCurrentMonth = (today.getFullYear() === y && today.getMonth() + 1 === m);
-  const daysSoFar = isCurrentMonth ? today.getDate() : daysInMonth;
-  // aderência = dias treinados / dias úteis esperados; aqui usamos schedule do aluno
-  const horarios = horariosArray(aluno.Horarios);
-  const treinosEsperadosNoMes = horarios.length
-    ? countExpectedSessions(horarios, y, m, daysSoFar)
-    : null;
-  const aderencia = treinosEsperadosNoMes
-    ? Math.min(100, Math.round((treinosNoMes.length / treinosEsperadosNoMes) * 100))
-    : null;
-
-  // calendar
-  const trainedDays = new Set(treinosNoMes.map(t => Number(String(t.Data).split('-')[2])));
-  const firstWeekday = new Date(y, m-1, 1).getDay();
-  let calHTML = WEEKDAYS.map(w => `<div class="cal-head">${w.short}</div>`).join('');
-  for (let i = 0; i < firstWeekday; i++) calHTML += `<div class="cal-day empty"></div>`;
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = isCurrentMonth && d === today.getDate();
-    const trained = trainedDays.has(d);
-    calHTML += `<div class="cal-day ${trained ? 'trained' : ''} ${isToday ? 'today' : ''}">${d}</div>`;
+  // defaults pros date pickers
+  if (!$('#reportFrom').value) {
+    const now = new Date();
+    const firstOfMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    $('#reportFrom').value = firstOfMonth;
+    $('#reportTo').value = todayISO();
   }
 
-  // muscle chart
-  const muscleCounts = {};
-  treinosNoMes.forEach(t => {
+  if (!state.alunos.length && !state.treinos.length) {
+    $('#reportContent').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">Sem dados ainda</div>
+        <div class="empty-sub">Cadastre alunos e registre treinos pra ver relatórios.</div>
+      </div>`;
+    return;
+  }
+
+  renderReportContent();
+}
+
+// retorna { mode, alunoId, range:{from,to}, label }
+function getReportFilters() {
+  const alunoId = $('#reportAluno').value;       // '' = todos
+  const mode = $('#reportPeriodMode').value;     // 'month' | 'range'
+  if (mode === 'month') {
+    const month = $('#reportMonth').value;
+    const [y, m] = month.split('-').map(Number);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    return {
+      mode, alunoId,
+      range: {
+        from: `${month}-01`,
+        to: `${month}-${String(daysInMonth).padStart(2,'0')}`,
+        year: y, month: m, daysInMonth,
+      },
+      label: monthLabel(month),
+      isFullMonth: true,
+    };
+  }
+  const from = $('#reportFrom').value || todayISO();
+  const to   = $('#reportTo').value   || todayISO();
+  return {
+    mode, alunoId,
+    range: { from, to },
+    label: `${fmtDate(from)} — ${fmtDate(to)}`,
+    isFullMonth: false,
+  };
+}
+
+function filterTreinos(filters) {
+  return state.treinos.filter(t => {
+    if (filters.alunoId && String(t.AlunoId) !== String(filters.alunoId)) return false;
+    if (!t.Data) return false;
+    if (t.Data < filters.range.from) return false;
+    if (t.Data > filters.range.to) return false;
+    return true;
+  });
+}
+
+function renderReportContent() {
+  const f = getReportFilters();
+  const treinos = filterTreinos(f);
+
+  if (f.alunoId) {
+    renderReportSingleAluno(f, treinos);
+  } else {
+    renderReportGeneral(f, treinos);
+  }
+}
+
+/* ===== Relatório de UM aluno ===== */
+function renderReportSingleAluno(f, treinos) {
+  const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
+  if (!aluno) return;
+
+  const diasTreinados = new Set(treinos.map(t => t.Data)).size;
+  const today = new Date();
+  const horarios = horariosArray(aluno.Horarios);
+
+  // Aderência: dias com sessão esperada dentro do range vs treinos realizados
+  let treinosEsperados = null, aderencia = null;
+  if (horarios.length) {
+    treinosEsperados = countExpectedInRange(horarios, f.range.from, f.range.to, today);
+    if (treinosEsperados > 0) {
+      aderencia = Math.min(100, Math.round((treinos.length / treinosEsperados) * 100));
+    }
+  }
+
+  // Calendar (só faz sentido se for mês inteiro; se for range, vira lista de dias)
+  let calendarPanel = '';
+  if (f.isFullMonth) {
+    calendarPanel = renderMonthCalendar(f, treinos, today);
+  } else {
+    calendarPanel = renderRangeStrip(f, treinos);
+  }
+
+  const muscleEntries = aggregateMuscles(treinos);
+  const gymEntries    = aggregateGyms(treinos);
+
+  const totalDays = Math.max(1, daysBetween(f.range.from, f.range.to) + 1);
+
+  $('#reportContent').innerHTML = `
+    <div class="print-header">
+      <div class="ph-title">FitHub Personal · Relatório</div>
+      <div class="ph-meta">
+        <strong>${escapeHTML(aluno.Nome)}</strong> ·
+        ${escapeHTML(f.label)} ·
+        gerado em ${fmtDate(todayISO())}
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Treinos</div>
+        <div class="kpi-value">${treinos.length}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Dias treinados</div>
+        <div class="kpi-value">${diasTreinados}<span class="unit">/${totalDays}</span></div>
+      </div>
+      ${aderencia !== null ? `
+      <div class="kpi">
+        <div class="kpi-label">Aderência</div>
+        <div class="kpi-value">${aderencia}<span class="unit">%</span></div>
+        <div class="kpi-sub">${treinos.length}/${treinosEsperados} esperados</div>
+      </div>` : `
+      <div class="kpi">
+        <div class="kpi-label">Aderência</div>
+        <div class="kpi-value" style="color:var(--muted)">—</div>
+        <div class="kpi-sub">Defina horários fixos</div>
+      </div>`}
+      <div class="kpi">
+        <div class="kpi-label">Grupos únicos</div>
+        <div class="kpi-value">${muscleEntries.length}</div>
+      </div>
+    </div>
+
+    ${calendarPanel}
+
+    <div class="panel">
+      <div class="panel-title">Grupos musculares trabalhados</div>
+      ${renderMuscleBars(muscleEntries)}
+    </div>
+
+    ${gymEntries.length ? `
+    <div class="panel">
+      <div class="panel-title">Distribuição por academia</div>
+      ${renderGymList(gymEntries)}
+    </div>` : ''}
+
+    ${treinos.length ? `
+    <div class="panel">
+      <div class="panel-title">Lista de treinos no período</div>
+      ${renderTreinoList(treinos)}
+    </div>` : ''}
+  `;
+}
+
+/* ===== Relatório GERAL (todos os alunos) ===== */
+function renderReportGeneral(f, treinos) {
+  const alunosAtivos = new Set(treinos.map(t => String(t.AlunoId))).size;
+  const diasTreinados = new Set(treinos.map(t => t.Data)).size;
+  const totalDays = Math.max(1, daysBetween(f.range.from, f.range.to) + 1);
+
+  // Por aluno
+  const byAluno = {};
+  treinos.forEach(t => {
+    const id = String(t.AlunoId);
+    if (!byAluno[id]) byAluno[id] = { count: 0, days: new Set(), muscles: {} };
+    byAluno[id].count++;
+    byAluno[id].days.add(t.Data);
     muscArray(t.Musculos).forEach(m => {
-      muscleCounts[m] = (muscleCounts[m] || 0) + 1;
+      byAluno[id].muscles[m] = (byAluno[id].muscles[m] || 0) + 1;
     });
   });
-  const muscleEntries = Object.entries(muscleCounts).sort((a,b) => b[1] - a[1]);
-  const maxMuscleCount = muscleEntries[0]?.[1] || 1;
-  const muscleHTML = muscleEntries.length ? muscleEntries.map(([id, count]) => `
+  const alunoRanking = Object.entries(byAluno)
+    .map(([id, data]) => {
+      const al = state.alunos.find(a => String(a.ID) === String(id));
+      return { id, name: al?.Nome || 'Aluno removido', count: data.count, days: data.days.size };
+    })
+    .sort((a,b) => b.count - a.count);
+
+  const muscleEntries = aggregateMuscles(treinos);
+  const gymEntries    = aggregateGyms(treinos);
+
+  // Heatmap de carga diária (só faz sentido se for mês inteiro)
+  let calendarPanel = '';
+  if (f.isFullMonth) {
+    calendarPanel = renderMonthCalendarHeatmap(f, treinos, new Date());
+  } else {
+    calendarPanel = renderRangeStrip(f, treinos, true);
+  }
+
+  $('#reportContent').innerHTML = `
+    <div class="print-header">
+      <div class="ph-title">FitHub Personal · Relatório Geral</div>
+      <div class="ph-meta">
+        <strong>Todos os alunos</strong> ·
+        ${escapeHTML(f.label)} ·
+        gerado em ${fmtDate(todayISO())}
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Treinos no período</div>
+        <div class="kpi-value">${treinos.length}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Alunos ativos</div>
+        <div class="kpi-value">${alunosAtivos}<span class="unit">/${state.alunos.length}</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Dias com treinos</div>
+        <div class="kpi-value">${diasTreinados}<span class="unit">/${totalDays}</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Grupos únicos</div>
+        <div class="kpi-value">${muscleEntries.length}</div>
+      </div>
+    </div>
+
+    ${calendarPanel}
+
+    <div class="panel">
+      <div class="panel-title">Ranking de alunos por treinos</div>
+      ${alunoRanking.length ? renderAlunoRanking(alunoRanking) : '<div class="empty-sub" style="text-align:center">Sem treinos no período.</div>'}
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Grupos musculares (agregado)</div>
+      ${renderMuscleBars(muscleEntries)}
+    </div>
+
+    ${gymEntries.length ? `
+    <div class="panel">
+      <div class="panel-title">Distribuição por academia</div>
+      ${renderGymList(gymEntries)}
+    </div>` : ''}
+  `;
+}
+
+/* ===== Helpers de agregação e render ===== */
+
+function aggregateMuscles(treinos) {
+  const counts = {};
+  treinos.forEach(t => muscArray(t.Musculos).forEach(m => {
+    counts[m] = (counts[m] || 0) + 1;
+  }));
+  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+}
+function aggregateGyms(treinos) {
+  const counts = {};
+  treinos.forEach(t => {
+    counts[t.AcademiaId] = (counts[t.AcademiaId] || 0) + 1;
+  });
+  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+}
+
+function renderMuscleBars(entries) {
+  if (!entries.length) return `<div class="empty-sub" style="text-align:center">Nenhum grupo registrado.</div>`;
+  const max = entries[0][1];
+  return entries.map(([id, count]) => `
     <div class="bar-row">
       <div class="bar-label">${muscLabel(id)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(count/maxMuscleCount)*100}%"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(count/max)*100}%"></div></div>
       <div class="bar-count">${count}</div>
     </div>
-  `).join('') : `<div class="empty-sub" style="text-align:center">Nenhum grupo registrado neste mês.</div>`;
+  `).join('');
+}
 
-  // gym distribution
-  const gymCounts = {};
-  treinosNoMes.forEach(t => {
-    gymCounts[t.AcademiaId] = (gymCounts[t.AcademiaId] || 0) + 1;
-  });
-  const gymHTML = Object.entries(gymCounts).map(([id, count]) => {
+function renderGymList(entries) {
+  return entries.map(([id, count]) => {
     const ac = state.academias.find(a => String(a.ID) === String(id));
     const cor = gymColor(ac?.Cor || 'lime').hex;
     return `
@@ -1723,50 +2106,141 @@ function renderReportContent() {
       </div>
     `;
   }).join('');
+}
 
-  $('#reportContent').innerHTML = `
-    <div class="kpi-row">
-      <div class="kpi">
-        <div class="kpi-label">Treinos no mês</div>
-        <div class="kpi-value">${treinosNoMes.length}</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Dias treinados</div>
-        <div class="kpi-value">${diasTreinados}<span class="unit">/${daysInMonth}</span></div>
-      </div>
-      ${aderencia !== null ? `
-      <div class="kpi">
-        <div class="kpi-label">Aderência</div>
-        <div class="kpi-value">${aderencia}<span class="unit">%</span></div>
-        <div class="kpi-sub">${treinosNoMes.length}/${treinosEsperadosNoMes} esperados</div>
-      </div>` : `
-      <div class="kpi">
-        <div class="kpi-label">Aderência</div>
-        <div class="kpi-value" style="color:var(--muted)">—</div>
-        <div class="kpi-sub">Defina horários fixos do aluno</div>
-      </div>`}
-      <div class="kpi">
-        <div class="kpi-label">Grupos únicos</div>
-        <div class="kpi-value">${muscleEntries.length}</div>
-      </div>
+function renderAlunoRanking(ranking) {
+  const max = ranking[0]?.count || 1;
+  return ranking.map(r => `
+    <div class="bar-row">
+      <div class="bar-label">${escapeHTML(r.name)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(r.count/max)*100}%"></div></div>
+      <div class="bar-count">${r.count}</div>
     </div>
+  `).join('');
+}
 
+function renderTreinoList(treinos) {
+  const sorted = treinos.slice().sort((a,b) => String(a.Data).localeCompare(String(b.Data)) || String(a.Horario).localeCompare(String(b.Horario)));
+  return `<div class="treino-list">${sorted.map(t => {
+    const al = state.alunos.find(a => String(a.ID) === String(t.AlunoId));
+    const ac = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
+    const cor = gymColor(ac?.Cor || 'lime').hex;
+    const muscs = muscArray(t.Musculos).map(muscLabel).join(', ');
+    return `
+      <div class="treino-line">
+        <span class="treino-date">${fmtDate(t.Data)} ${t.Horario || ''}</span>
+        <span class="gym-dot" style="background:${cor}"></span>
+        <span class="treino-where">${escapeHTML(ac?.Nome || '—')}</span>
+        <span class="treino-musc">${muscs || '<em style="opacity:.5">sem grupos</em>'}</span>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function renderMonthCalendar(f, treinos, today) {
+  const trainedDays = new Set(treinos.map(t => Number(String(t.Data).split('-')[2])));
+  const firstWeekday = new Date(f.range.year, f.range.month - 1, 1).getDay();
+  const isCurrentMonth = (today.getFullYear() === f.range.year && today.getMonth() + 1 === f.range.month);
+
+  let calHTML = WEEKDAYS.map(w => `<div class="cal-head">${w.short}</div>`).join('');
+  for (let i = 0; i < firstWeekday; i++) calHTML += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= f.range.daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    const trained = trainedDays.has(d);
+    calHTML += `<div class="cal-day ${trained ? 'trained' : ''} ${isToday ? 'today' : ''}">${d}</div>`;
+  }
+  return `
     <div class="panel">
-      <div class="panel-title">Calendário · ${monthLabel(month)}</div>
+      <div class="panel-title">Calendário · ${escapeHTML(f.label)}</div>
       <div class="calendar">${calHTML}</div>
     </div>
-
-    <div class="panel">
-      <div class="panel-title">Grupos musculares trabalhados</div>
-      ${muscleHTML}
-    </div>
-
-    ${gymHTML ? `
-    <div class="panel">
-      <div class="panel-title">Distribuição por academia</div>
-      ${gymHTML}
-    </div>` : ''}
   `;
+}
+
+function renderMonthCalendarHeatmap(f, treinos, today) {
+  // Heatmap: cor mais forte conforme número de treinos no dia
+  const dayCounts = {};
+  treinos.forEach(t => {
+    const d = Number(String(t.Data).split('-')[2]);
+    dayCounts[d] = (dayCounts[d] || 0) + 1;
+  });
+  const max = Math.max(1, ...Object.values(dayCounts));
+  const firstWeekday = new Date(f.range.year, f.range.month - 1, 1).getDay();
+  const isCurrentMonth = (today.getFullYear() === f.range.year && today.getMonth() + 1 === f.range.month);
+
+  let calHTML = WEEKDAYS.map(w => `<div class="cal-head">${w.short}</div>`).join('');
+  for (let i = 0; i < firstWeekday; i++) calHTML += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= f.range.daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    const count = dayCounts[d] || 0;
+    const opacity = count ? (0.25 + 0.75 * (count / max)) : 0;
+    const style = count ? `background:rgba(190,242,100,${opacity});color:#0a0a0a;font-weight:700;` : '';
+    calHTML += `<div class="cal-day ${isToday ? 'today' : ''}" style="${style}">${d}${count ? `<sub style="font-size:8px;opacity:.7"> ·${count}</sub>` : ''}</div>`;
+  }
+  return `
+    <div class="panel">
+      <div class="panel-title">Carga por dia · ${escapeHTML(f.label)}</div>
+      <div class="calendar">${calHTML}</div>
+    </div>
+  `;
+}
+
+function renderRangeStrip(f, treinos, withCount = false) {
+  // Strip horizontal de dias dentro do range com marcação onde teve treino
+  const days = [];
+  let cur = f.range.from;
+  let safety = 0;
+  while (cur <= f.range.to && safety < 400) {
+    days.push(cur);
+    cur = shiftDate(cur, 1);
+    safety++;
+  }
+  const dayCounts = {};
+  treinos.forEach(t => { dayCounts[t.Data] = (dayCounts[t.Data] || 0) + 1; });
+  const max = Math.max(1, ...Object.values(dayCounts));
+
+  const cells = days.map(iso => {
+    const count = dayCounts[iso] || 0;
+    const opacity = count ? (0.25 + 0.75 * (count / max)) : 0;
+    const style = count
+      ? `background:rgba(190,242,100,${opacity});color:#0a0a0a;font-weight:700;`
+      : '';
+    const dd = iso.split('-')[2];
+    return `<div class="strip-day" style="${style}" title="${fmtDate(iso)}${count ? ` · ${count} treino(s)` : ''}">${dd}${withCount && count ? `<sub style="font-size:8px;opacity:.7"> ·${count}</sub>` : ''}</div>`;
+  }).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-title">Linha do tempo · ${escapeHTML(f.label)}</div>
+      <div class="strip">${cells}</div>
+    </div>
+  `;
+}
+
+function countExpectedInRange(horarios, fromISO, toISO, today) {
+  // Conta dias dentro do range cujo weekday bate com algum horário fixo,
+  // limitado a hoje (não conta futuro como esperado)
+  const weekdays = new Set(horarios.map(h => h.weekday));
+  let cur = fromISO;
+  let end = toISO;
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  if (end > todayIso) end = todayIso;
+  let count = 0, safety = 0;
+  while (cur <= end && safety < 400) {
+    const wd = weekdayFromISO(cur);
+    if (weekdays.has(wd)) count++;
+    cur = shiftDate(cur, 1);
+    safety++;
+  }
+  return count;
+}
+
+function daysBetween(fromISO, toISO) {
+  const [y1,m1,d1] = fromISO.split('-').map(Number);
+  const [y2,m2,d2] = toISO.split('-').map(Number);
+  const a = new Date(y1, m1-1, d1);
+  const b = new Date(y2, m2-1, d2);
+  return Math.round((b - a) / 86400000);
 }
 
 function countExpectedSessions(horarios, y, m, untilDay) {
@@ -1778,42 +2252,86 @@ function countExpectedSessions(horarios, y, m, untilDay) {
   return count;
 }
 
+/* ===== Event handlers dos filtros ===== */
 $('#reportAluno').addEventListener('change', renderReportContent);
 $('#reportMonth').addEventListener('change', renderReportContent);
+$('#reportFrom').addEventListener('change', renderReportContent);
+$('#reportTo').addEventListener('change', renderReportContent);
+$('#reportPeriodMode').addEventListener('change', () => {
+  const isMonth = $('#reportPeriodMode').value === 'month';
+  $('#reportMonthGroup').style.display = isMonth ? '' : 'none';
+  $('#reportFromGroup').style.display  = isMonth ? 'none' : '';
+  $('#reportToGroup').style.display    = isMonth ? 'none' : '';
+  renderReportContent();
+});
+
+/* ===== Export PDF (via diálogo nativo de impressão) ===== */
+$('#exportPdfBtn').addEventListener('click', () => {
+  // Adiciona classe que ativa CSS de impressão otimizado
+  document.body.classList.add('printing');
+  setTimeout(() => {
+    window.print();
+    // remove classe depois (alguns navegadores chamam onafterprint, outros não)
+    setTimeout(() => document.body.classList.remove('printing'), 500);
+  }, 100);
+});
+window.addEventListener('afterprint', () => document.body.classList.remove('printing'));
 
 $('#exportTextBtn').addEventListener('click', () => {
-  const alunoId = $('#reportAluno').value;
-  const month = $('#reportMonth').value;
-  if (!alunoId || !month) return toast('Selecione aluno e mês.', 'error');
-  const aluno = state.alunos.find(a => String(a.ID) === String(alunoId));
-  const treinosNoMes = state.treinos.filter(t =>
-    String(t.AlunoId) === String(alunoId) &&
-    String(t.Data || '').startsWith(month)
-  ).sort((a,b) => String(a.Data).localeCompare(String(b.Data)));
+  const f = getReportFilters();
+  const treinos = filterTreinos(f);
+  let lines;
 
-  const muscleCounts = {};
-  treinosNoMes.forEach(t => muscArray(t.Musculos).forEach(m => {
-    muscleCounts[m] = (muscleCounts[m] || 0) + 1;
-  }));
-  const topMusculos = Object.entries(muscleCounts).sort((a,b) => b[1]-a[1])
-    .slice(0,5).map(([id, c]) => `${muscLabel(id)} (${c})`).join(', ');
-
-  const lines = [
-    `📊 *${aluno?.Nome || 'Aluno'} · ${monthLabel(month)}*`,
-    ``,
-    `Treinos: *${treinosNoMes.length}*`,
-    `Dias treinados: *${new Set(treinosNoMes.map(t => t.Data)).size}*`,
-    topMusculos ? `Foco: ${topMusculos}` : null,
-    ``,
-    `_Datas:_`,
-    ...treinosNoMes.map(t => {
-      const ac = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
-      const muscs = muscArray(t.Musculos).slice(0,4).map(muscLabel).join(', ');
-      return `• ${fmtDate(t.Data)} ${t.Horario || ''} · ${ac?.Nome || '—'}${muscs ? ` · ${muscs}` : ''}`;
-    }),
-    ``,
-    `— enviado via FitHub Personal`,
-  ].filter(Boolean);
+  if (f.alunoId) {
+    const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
+    const muscleEntries = aggregateMuscles(treinos);
+    const topMusculos = muscleEntries.slice(0,5).map(([id, c]) => `${muscLabel(id)} (${c})`).join(', ');
+    lines = [
+      `📊 *${aluno?.Nome || 'Aluno'} · ${f.label}*`,
+      ``,
+      `Treinos: *${treinos.length}*`,
+      `Dias treinados: *${new Set(treinos.map(t => t.Data)).size}*`,
+      topMusculos ? `Foco: ${topMusculos}` : null,
+      ``,
+      `_Datas:_`,
+      ...treinos
+        .slice()
+        .sort((a,b) => String(a.Data).localeCompare(String(b.Data)))
+        .map(t => {
+          const ac = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
+          const muscs = muscArray(t.Musculos).slice(0,4).map(muscLabel).join(', ');
+          return `• ${fmtDate(t.Data)} ${t.Horario || ''} · ${ac?.Nome || '—'}${muscs ? ` · ${muscs}` : ''}`;
+        }),
+      ``,
+      `— enviado via FitHub Personal`,
+    ].filter(Boolean);
+  } else {
+    // Geral
+    const alunosAtivos = new Set(treinos.map(t => String(t.AlunoId))).size;
+    const byAluno = {};
+    treinos.forEach(t => {
+      const id = String(t.AlunoId);
+      byAluno[id] = (byAluno[id] || 0) + 1;
+    });
+    const rank = Object.entries(byAluno)
+      .map(([id, c]) => {
+        const al = state.alunos.find(a => String(a.ID) === String(id));
+        return { name: al?.Nome || 'Aluno removido', count: c };
+      })
+      .sort((a,b) => b.count - a.count);
+    lines = [
+      `📊 *Relatório Geral · ${f.label}*`,
+      ``,
+      `Treinos totais: *${treinos.length}*`,
+      `Alunos ativos: *${alunosAtivos}/${state.alunos.length}*`,
+      `Dias com treinos: *${new Set(treinos.map(t => t.Data)).size}*`,
+      ``,
+      `_Por aluno:_`,
+      ...rank.map(r => `• ${r.name} — ${r.count} treino${r.count !== 1 ? 's' : ''}`),
+      ``,
+      `— enviado via FitHub Personal`,
+    ];
+  }
 
   $('#exportText').textContent = lines.join('\n');
   openModal('export');

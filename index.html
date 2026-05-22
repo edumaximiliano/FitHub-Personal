@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<meta name="apple-mobile-web-app-title" content="FitHub">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>FitHub Personal — Sistema de Performance para Personal Trainers</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -785,15 +792,15 @@
    * Você cria esse Form na ETAPA 1 do SETUP.md.
    * Pegue o link curto em: Form → botão "Enviar" → ícone de link
    * ============================================================ */
-  const GOOGLE_FORM_URL = 'https://forms.gle/jzjtPfYEe7bvYhqR9';   // ex: 'https://forms.gle/abc123xyz'
+  const GOOGLE_FORM_URL = '';   // ex: 'https://forms.gle/abc123xyz'
 
   const signupTargets = [
     document.getElementById('signupLink'),
     document.getElementById('signupLinkBig'),
   ];
-  if (https://forms.gle/6gfv1Ku8kMSYhZ2t9) {
+  if (GOOGLE_FORM_URL) {
     signupTargets.forEach(el => {
-      el.href = https://forms.gle/6gfv1Ku8kMSYhZ2t9;
+      el.href = GOOGLE_FORM_URL;
       el.target = '_blank';
       el.rel = 'noopener';
     });
