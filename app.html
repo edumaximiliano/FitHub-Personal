@@ -992,6 +992,26 @@ const state = {
 function $(sel, parent = document) { return parent.querySelector(sel); }
 function $$(sel, parent = document) { return Array.from(parent.querySelectorAll(sel)); }
 
+// força valor a string (evita .replace etc em number/bool do Sheets)
+function s(v) { return v == null ? '' : String(v); }
+
+// normaliza Musculos vindos da planilha (pode ser array OU string CSV)
+function muscArray(m) {
+  if (Array.isArray(m)) return m;
+  if (typeof m === 'string') return m.split(',').map(x => x.trim()).filter(Boolean);
+  return [];
+}
+
+// normaliza Horarios (pode ser array, JSON string, ou vazio)
+function horariosArray(h) {
+  if (Array.isArray(h)) return h;
+  if (typeof h === 'string' && h.trim()) {
+    try { const parsed = JSON.parse(h); return Array.isArray(parsed) ? parsed : []; }
+    catch { return []; }
+  }
+  return [];
+}
+
 function toast(msg, type = 'success', ms = 3000) {
   const wrap = $('#toastWrap');
   const el = document.createElement('div');
@@ -1097,11 +1117,8 @@ function renderAgenda() {
   grid.innerHTML = HOUR_SLOTS.map(slot => {
     const checkins = dayTreinos.filter(t => slotOfTime(t.Horario) === slot);
     const suggestedAlunos = state.alunos.filter(al => {
-      let horarios = al.Horarios || [];
-      if (typeof horarios === 'string') {
-        try { horarios = JSON.parse(horarios); } catch { horarios = []; }
-      }
-      return Array.isArray(horarios) && horarios.some(h =>
+      const horarios = horariosArray(al.Horarios);
+      return horarios.some(h =>
         h.weekday === weekday && slotOfTime(h.time) === slot
       );
     }).filter(al => !checkins.some(c => c.AlunoId === al.ID));
@@ -1147,7 +1164,7 @@ function renderCheckin(t) {
   const aluno = state.alunos.find(a => String(a.ID) === String(t.AlunoId));
   const acad = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
   const cor = gymColor(acad?.Cor || 'lime').hex;
-  const muscs = (t.Musculos || '').split(',').filter(Boolean).slice(0,3);
+  const muscs = muscArray(t.Musculos).slice(0,3);
   return `
     <div class="checkin" data-id="${t.ID}">
       <div class="checkin-name">${escapeHTML(aluno?.Nome || 'Aluno removido')}</div>
@@ -1193,7 +1210,7 @@ function openCheckinModal({ treino, alunoId, horario, data } = {}) {
     state.academias.map(a => `<option value="${a.ID}">${escapeHTML(a.Nome)}</option>`).join('');
   acadSelect.value = treino?.AcademiaId || (state.academias[0]?.ID || '');
 
-  const selectedMuscs = (treino?.Musculos || '').split(',').filter(Boolean);
+  const selectedMuscs = muscArray(treino?.Musculos);
   $('#ci_muscles').innerHTML = MUSCLE_GROUPS.map(m => `
     <div class="muscle-chip ${selectedMuscs.includes(m.id) ? 'selected' : ''}" data-id="${m.id}">${m.label}</div>
   `).join('');
@@ -1212,14 +1229,14 @@ $('#ci_save').addEventListener('click', async () => {
   if (!alunoId) return toast('Selecione um aluno.', 'error');
   if (!acadId) return toast('Selecione uma academia.', 'error');
 
-  const muscs = $$('#ci_muscles .muscle-chip.selected').map(c => c.dataset.id).join(',');
+  const muscs = $$('#ci_muscles .muscle-chip.selected').map(c => c.dataset.id);
   const fields = {
     alunoId,
     academiaId: acadId,
     data: $('#ci_data').value,
     horario: $('#ci_horario').value,
-    musculos: muscs,
-    observacoes: $('#ci_obs').value.trim(),
+    musculos: muscs,                // array (backend faz .join)
+    obs: $('#ci_obs').value.trim(), // backend lê body.obs
   };
 
   showLoading(true);
@@ -1279,18 +1296,16 @@ function renderAlunos() {
     return;
   }
   root.innerHTML = `<div class="cards-grid">${state.alunos.map(al => {
-    let horarios = al.Horarios || [];
-    if (typeof horarios === 'string') {
-      try { horarios = JSON.parse(horarios); } catch { horarios = []; }
-    }
-    const wppLink = al.WhatsApp ? al.WhatsApp.replace(/\D/g,'') : '';
+    const horarios = horariosArray(al.Horarios);
+    const wppRaw = s(al.WhatsApp);
+    const wppLink = wppRaw ? wppRaw.replace(/\D/g,'') : '';
     return `
       <div class="item-card">
         <div class="item-card-head">
           <div class="item-name">${escapeHTML(al.Nome)}</div>
         </div>
         ${al.Objetivo ? `<div class="item-meta">🎯 <span>${escapeHTML(al.Objetivo)}</span></div>` : ''}
-        ${al.WhatsApp ? `<div class="item-meta">📱 <span class="mono">${escapeHTML(al.WhatsApp)}</span></div>` : ''}
+        ${wppRaw ? `<div class="item-meta">📱 <span class="mono">${escapeHTML(wppRaw)}</span></div>` : ''}
         ${al.Observacoes ? `<div class="item-meta">📝 <span>${escapeHTML(al.Observacoes)}</span></div>` : ''}
         ${horarios.length ? `<div class="schedule-chips">${horarios.map(h =>
           `<span class="schedule-chip">${WEEKDAYS[h.weekday]?.short || '?'} ${h.time}</span>`
@@ -1324,10 +1339,7 @@ function openAlunoModal(id) {
   $('#al_objetivo').value = al?.Objetivo || '';
   $('#al_obs').value = al?.Observacoes || '';
 
-  let horarios = al?.Horarios || [];
-  if (typeof horarios === 'string') {
-    try { horarios = JSON.parse(horarios); } catch { horarios = []; }
-  }
+  const horarios = horariosArray(al?.Horarios);
   renderScheduleEditor(horarios);
   openModal('aluno');
 }
@@ -1377,8 +1389,8 @@ $('#al_save').addEventListener('click', async () => {
     nome,
     whatsapp: $('#al_whatsapp').value.trim(),
     objetivo: $('#al_objetivo').value.trim(),
-    observacoes: $('#al_obs').value.trim(),
-    horarios: JSON.stringify(collectSchedule()),
+    obs: $('#al_obs').value.trim(),       // backend lê body.obs
+    horarios: collectSchedule(),          // array (backend faz JSON.stringify)
   };
   showLoading(true);
   try {
@@ -1581,10 +1593,7 @@ function renderReportContent() {
   const isCurrentMonth = (today.getFullYear() === y && today.getMonth() + 1 === m);
   const daysSoFar = isCurrentMonth ? today.getDate() : daysInMonth;
   // aderência = dias treinados / dias úteis esperados; aqui usamos schedule do aluno
-  let horarios = aluno.Horarios || [];
-  if (typeof horarios === 'string') {
-    try { horarios = JSON.parse(horarios); } catch { horarios = []; }
-  }
+  const horarios = horariosArray(aluno.Horarios);
   const treinosEsperadosNoMes = horarios.length
     ? countExpectedSessions(horarios, y, m, daysSoFar)
     : null;
@@ -1606,7 +1615,7 @@ function renderReportContent() {
   // muscle chart
   const muscleCounts = {};
   treinosNoMes.forEach(t => {
-    (t.Musculos || '').split(',').filter(Boolean).forEach(m => {
+    muscArray(t.Musculos).forEach(m => {
       muscleCounts[m] = (muscleCounts[m] || 0) + 1;
     });
   });
@@ -1705,7 +1714,7 @@ $('#exportTextBtn').addEventListener('click', () => {
   ).sort((a,b) => String(a.Data).localeCompare(String(b.Data)));
 
   const muscleCounts = {};
-  treinosNoMes.forEach(t => (t.Musculos || '').split(',').filter(Boolean).forEach(m => {
+  treinosNoMes.forEach(t => muscArray(t.Musculos).forEach(m => {
     muscleCounts[m] = (muscleCounts[m] || 0) + 1;
   }));
   const topMusculos = Object.entries(muscleCounts).sort((a,b) => b[1]-a[1])
@@ -1721,7 +1730,7 @@ $('#exportTextBtn').addEventListener('click', () => {
     `_Datas:_`,
     ...treinosNoMes.map(t => {
       const ac = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
-      const muscs = (t.Musculos || '').split(',').filter(Boolean).slice(0,4).map(muscLabel).join(', ');
+      const muscs = muscArray(t.Musculos).slice(0,4).map(muscLabel).join(', ');
       return `• ${fmtDate(t.Data)} ${t.Horario || ''} · ${ac?.Nome || '—'}${muscs ? ` · ${muscs}` : ''}`;
     }),
     ``,
