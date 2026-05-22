@@ -730,6 +730,45 @@
     .field-row { grid-template-columns: 1fr; }
     .date-display { min-width: 110px; padding: 0 8px; font-size: 11px; }
     .modal-overlay { padding: 16px; }
+
+    /* ----- Relatórios em mobile ----- */
+    .report-controls {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .control-group { width: 100%; }
+    .select { min-width: 0; width: 100%; }
+    #exportTextBtn { width: 100%; }
+
+    .kpi-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .kpi { padding: 12px 14px; min-width: 0; }
+    .kpi-value { font-size: 30px; }
+
+    .panel {
+      padding: 14px;
+      margin-bottom: 20px;
+      overflow: hidden; /* impede que conteúdo interno vaze e se sobreponha ao próximo painel */
+    }
+    .panel-title { font-size: 10px; margin-bottom: 12px; }
+
+    .calendar { gap: 3px; }
+    .cal-head { font-size: 9px; padding: 4px 0; }
+    .cal-day { font-size: 11px; min-width: 0; }
+
+    .bar-row {
+      grid-template-columns: 80px 1fr 30px;
+      gap: 8px;
+      font-size: 11px;
+      min-width: 0;
+    }
+    .bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { min-width: 0; }
+
+    .gym-row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   }
 </style>
 </head>
@@ -1012,6 +1051,45 @@ function horariosArray(h) {
   return [];
 }
 
+// Sheets converte strings de data/hora em Date objects internos.
+// Ao serializar em JSON, viram ISO ("2026-05-22T03:00:00.000Z").
+// Esses helpers desfazem essa conversão pra YYYY-MM-DD e HH:MM.
+function normDate(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
+  }
+  const str = String(v);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) return str.slice(0, 10);
+  return str;
+}
+function normTime(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    return `${String(v.getHours()).padStart(2,'0')}:${String(v.getMinutes()).padStart(2,'0')}`;
+  }
+  const str = String(v);
+  if (/^\d{1,2}:\d{2}/.test(str)) {
+    const [h, m] = str.split(':');
+    return `${h.padStart(2,'0')}:${m.slice(0,2)}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+    const d = new Date(str);
+    if (!isNaN(d)) {
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+  }
+  return str;
+}
+function normalizeTreinos(items) {
+  return (items || []).map(t => ({
+    ...t,
+    Data: normDate(t.Data),
+    Horario: normTime(t.Horario),
+  }));
+}
+
 function toast(msg, type = 'success', ms = 3000) {
   const wrap = $('#toastWrap');
   const el = document.createElement('div');
@@ -1068,7 +1146,7 @@ async function loadAll() {
     ]);
     state.alunos = (a.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
     state.academias = (g.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
-    state.treinos = (t.items || []);
+    state.treinos = normalizeTreinos(t.items);
     state.loaded = true;
 
     $('#badgeAlunos').textContent = state.alunos.length;
@@ -1279,7 +1357,7 @@ $('#ci_delete').addEventListener('click', async () => {
 
 async function reloadTreinos() {
   const t = await API.list('treinos');
-  state.treinos = t.items || [];
+  state.treinos = normalizeTreinos(t.items);
 }
 
 /* ===================== ALUNOS ===================== */
