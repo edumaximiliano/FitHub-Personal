@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" defer></script>
 <style>
   :root {
     --bg: #0a0a0a;
@@ -348,6 +349,33 @@
     margin-top: 14px;
     padding-top: 14px;
     border-top: 1px solid var(--line);
+  }
+  .value-tag {
+    background: var(--lime-dim);
+    border: 1px solid rgba(190,242,100,0.3);
+    color: var(--lime);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .kpi-value.money {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .bar-row.with-money {
+    grid-template-columns: 110px minmax(0, 1fr) 36px 90px;
+  }
+  .bar-money {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--lime);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
   /* ============== RELATÓRIOS ============== */
@@ -781,6 +809,86 @@
   /* ============== PRINT HEADER (visível só em PDF) ============== */
   .print-header { display: none; }
 
+  /* ============== PDF GENERATION MODE ============== */
+  /* Aplicado via JS (classe body.pdf-active) antes de chamar html2pdf.
+     Espelha as regras do @media print abaixo, mas controladas por JS. */
+  body.pdf-active {
+    background: #ffffff !important;
+    color: #0a0a0a !important;
+    overflow: visible !important;
+  }
+  body.pdf-active .topbar,
+  body.pdf-active .tabbar,
+  body.pdf-active .section-head,
+  body.pdf-active .report-controls,
+  body.pdf-active .modal-overlay,
+  body.pdf-active .toast-wrap,
+  body.pdf-active .loading-overlay {
+    display: none !important;
+  }
+  body.pdf-active main { padding: 0 !important; max-width: 100% !important; }
+  body.pdf-active .section { display: none !important; }
+  body.pdf-active .section#section-relatorios { display: block !important; }
+  body.pdf-active .print-header {
+    display: block !important;
+    border-bottom: 2px solid #0a0a0a;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  body.pdf-active .ph-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: #0a0a0a;
+  }
+  body.pdf-active .ph-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #444;
+    margin-top: 2px;
+  }
+  body.pdf-active .kpi,
+  body.pdf-active .panel {
+    background: #ffffff !important;
+    border: 1px solid #d4d4d4 !important;
+    color: #0a0a0a !important;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+  }
+  body.pdf-active .kpi-label,
+  body.pdf-active .panel-title,
+  body.pdf-active .kpi-sub { color: #6b7280 !important; }
+  body.pdf-active .kpi-value { color: #4d7c0f !important; }
+  body.pdf-active .kpi-value .unit { color: #6b7280 !important; }
+  body.pdf-active .kpi-value.money { color: #4d7c0f !important; }
+  body.pdf-active .bar-track { background: #f3f4f6 !important; }
+  body.pdf-active .bar-fill { background: #65a30d !important; }
+  body.pdf-active .bar-label,
+  body.pdf-active .bar-count { color: #0a0a0a !important; }
+  body.pdf-active .bar-money { color: #65a30d !important; }
+  body.pdf-active .cal-day {
+    background: #f9fafb !important;
+    color: #6b7280 !important;
+    border-color: #e5e7eb !important;
+  }
+  body.pdf-active .cal-day.trained { background: #65a30d !important; color: #ffffff !important; }
+  body.pdf-active .cal-day.today { border-color: #65a30d !important; }
+  body.pdf-active .cal-head { color: #6b7280 !important; }
+  body.pdf-active .gym-row { border-bottom-color: #e5e7eb !important; }
+  body.pdf-active .gym-row-name { color: #0a0a0a !important; }
+  body.pdf-active .gym-row-count { color: #6b7280 !important; }
+  body.pdf-active .treino-line { border-bottom-color: #e5e7eb !important; color: #0a0a0a !important; }
+  body.pdf-active .treino-date,
+  body.pdf-active .treino-musc { color: #6b7280 !important; }
+  body.pdf-active .treino-list { max-height: none !important; overflow: visible !important; }
+  body.pdf-active .strip-day { background: #f3f4f6 !important; color: #6b7280 !important; }
+  body.pdf-active .value-tag {
+    background: #f3f4f6 !important;
+    border-color: #d4d4d4 !important;
+    color: #4d7c0f !important;
+  }
+  body.pdf-active .empty { display: none !important; }
+
   /* ============== PRINT MODE (PDF export) ============== */
   @media print {
     @page { size: A4; margin: 14mm; }
@@ -857,6 +965,14 @@
 
     .strip-day { background: #f3f4f6 !important; color: #6b7280 !important; }
 
+    .kpi-value.money { color: #4d7c0f !important; }
+    .bar-money { color: #65a30d !important; }
+    .value-tag {
+      background: #f3f4f6 !important;
+      border-color: #d4d4d4 !important;
+      color: #4d7c0f !important;
+    }
+
     .empty { display: none !important; }
   }
 
@@ -908,6 +1024,11 @@
       font-size: 11px;
       min-width: 0;
     }
+    .bar-row.with-money {
+      grid-template-columns: 70px minmax(0, 1fr) 26px 70px;
+      gap: 6px;
+    }
+    .bar-money { font-size: 10px; }
     .bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .bar-track { min-width: 0; }
 
@@ -1121,6 +1242,10 @@
         </div>
       </div>
       <div class="field">
+        <label>Valor por hora (R$)</label>
+        <input type="number" id="al_valorHora" placeholder="0,00" step="0.01" min="0" inputmode="decimal">
+      </div>
+      <div class="field">
         <label>Horários fixos (opcional)</label>
         <div class="schedule-editor" id="al_schedule"></div>
         <button class="add-schedule-btn" id="al_addSchedule">+ Adicionar horário</button>
@@ -1266,6 +1391,23 @@ function normalizeTreinos(items) {
     Data: normDate(t.Data),
     Horario: normTime(t.Horario),
   }));
+}
+
+// Formata valor em BRL (R$ 0,00)
+function formatBRL(value) {
+  const n = Number(value) || 0;
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+// Valor por hora do aluno (0 se não definido)
+function alunoValorHora(aluno) { return Number(aluno?.ValorHora) || 0; }
+
+// Calcula faturamento total de uma lista de treinos
+// (1 treino = 1 hora = 1 × valor_hora do aluno daquele treino)
+function faturamentoTreinos(treinos) {
+  return treinos.reduce((sum, t) => {
+    const al = state.alunos.find(a => String(a.ID) === String(t.AlunoId));
+    return sum + alunoValorHora(al);
+  }, 0);
 }
 
 function toast(msg, type = 'success', ms = 3000) {
@@ -1555,10 +1697,12 @@ function renderAlunos() {
     const horarios = horariosArray(al.Horarios);
     const wppRaw = s(al.WhatsApp);
     const wppLink = wppRaw ? wppRaw.replace(/\D/g,'') : '';
+    const valor = alunoValorHora(al);
     return `
       <div class="item-card">
         <div class="item-card-head">
           <div class="item-name">${escapeHTML(al.Nome)}</div>
+          ${valor ? `<div class="value-tag">${formatBRL(valor)}/h</div>` : ''}
         </div>
         ${al.Objetivo ? `<div class="item-meta">🎯 <span>${escapeHTML(al.Objetivo)}</span></div>` : ''}
         ${wppRaw ? `<div class="item-meta">📱 <span class="mono">${escapeHTML(wppRaw)}</span></div>` : ''}
@@ -1593,6 +1737,7 @@ function openAlunoModal(id) {
   $('#al_nome').value = al?.Nome || '';
   $('#al_whatsapp').value = al?.WhatsApp || '';
   $('#al_objetivo').value = al?.Objetivo || '';
+  $('#al_valorHora').value = al?.ValorHora ? Number(al.ValorHora).toString() : '';
   $('#al_obs').value = al?.Observacoes || '';
 
   const horarios = horariosArray(al?.Horarios);
@@ -1645,6 +1790,7 @@ $('#al_save').addEventListener('click', async () => {
     nome,
     whatsapp: $('#al_whatsapp').value.trim(),
     objetivo: $('#al_objetivo').value.trim(),
+    valorHora: parseFloat($('#al_valorHora').value) || 0,
     obs: $('#al_obs').value.trim(),       // backend lê body.obs
     horarios: collectSchedule(),          // array (backend faz JSON.stringify)
   };
@@ -1955,6 +2101,11 @@ function renderReportSingleAluno(f, treinos) {
         <div class="kpi-sub">Defina horários fixos</div>
       </div>`}
       <div class="kpi">
+        <div class="kpi-label">Faturamento</div>
+        <div class="kpi-value money">${formatBRL(treinos.length * alunoValorHora(aluno))}</div>
+        ${alunoValorHora(aluno) ? `<div class="kpi-sub">${formatBRL(alunoValorHora(aluno))}/h × ${treinos.length}</div>` : `<div class="kpi-sub">Defina valor/hora do aluno</div>`}
+      </div>
+      <div class="kpi">
         <div class="kpi-label">Grupos únicos</div>
         <div class="kpi-value">${muscleEntries.length}</div>
       </div>
@@ -2001,7 +2152,15 @@ function renderReportGeneral(f, treinos) {
   const alunoRanking = Object.entries(byAluno)
     .map(([id, data]) => {
       const al = state.alunos.find(a => String(a.ID) === String(id));
-      return { id, name: al?.Nome || 'Aluno removido', count: data.count, days: data.days.size };
+      const valor = alunoValorHora(al);
+      return {
+        id,
+        name: al?.Nome || 'Aluno removido',
+        count: data.count,
+        days: data.days.size,
+        valorHora: valor,
+        faturamento: valor * data.count,
+      };
     })
     .sort((a,b) => b.count - a.count);
 
@@ -2038,6 +2197,10 @@ function renderReportGeneral(f, treinos) {
       <div class="kpi">
         <div class="kpi-label">Dias com treinos</div>
         <div class="kpi-value">${diasTreinados}<span class="unit">/${totalDays}</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Faturamento total</div>
+        <div class="kpi-value money">${formatBRL(faturamentoTreinos(treinos))}</div>
       </div>
       <div class="kpi">
         <div class="kpi-label">Grupos únicos</div>
@@ -2110,13 +2273,18 @@ function renderGymList(entries) {
 
 function renderAlunoRanking(ranking) {
   const max = ranking[0]?.count || 1;
-  return ranking.map(r => `
-    <div class="bar-row">
-      <div class="bar-label">${escapeHTML(r.name)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(r.count/max)*100}%"></div></div>
-      <div class="bar-count">${r.count}</div>
+  return `
+    <div class="ranking-list">
+      ${ranking.map(r => `
+        <div class="bar-row with-money">
+          <div class="bar-label">${escapeHTML(r.name)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(r.count/max)*100}%"></div></div>
+          <div class="bar-count">${r.count}</div>
+          <div class="bar-money">${r.faturamento ? formatBRL(r.faturamento) : '<span style="opacity:.4">—</span>'}</div>
+        </div>
+      `).join('')}
     </div>
-  `).join('');
+  `;
 }
 
 function renderTreinoList(treinos) {
@@ -2265,17 +2433,62 @@ $('#reportPeriodMode').addEventListener('change', () => {
   renderReportContent();
 });
 
-/* ===== Export PDF (via diálogo nativo de impressão) ===== */
-$('#exportPdfBtn').addEventListener('click', () => {
-  // Adiciona classe que ativa CSS de impressão otimizado
-  document.body.classList.add('printing');
-  setTimeout(() => {
-    window.print();
-    // remove classe depois (alguns navegadores chamam onafterprint, outros não)
-    setTimeout(() => document.body.classList.remove('printing'), 500);
-  }, 100);
+/* ===== Export PDF (geração direta sem diálogo de impressão) ===== */
+function slugify(s) {
+  return String(s || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // remove acentos
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+    .slice(0, 60) || 'relatorio';
+}
+
+$('#exportPdfBtn').addEventListener('click', async () => {
+  if (typeof html2pdf === 'undefined') {
+    return toast('Biblioteca PDF ainda carregando. Tente em 2 segundos.', 'error', 4000);
+  }
+
+  const f = getReportFilters();
+  const treinos = filterTreinos(f);
+  if (!treinos.length) {
+    return toast('Sem treinos no período selecionado.', 'error');
+  }
+
+  // Nome do arquivo
+  let nameSlug;
+  if (f.alunoId) {
+    const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
+    nameSlug = slugify(aluno?.Nome || 'aluno');
+  } else {
+    nameSlug = 'Geral';
+  }
+  const periodSlug = slugify(f.label);
+  const filename = `FitHub_${nameSlug}_${periodSlug}.pdf`;
+
+  showLoading(true);
+  document.body.classList.add('pdf-active');
+  // força repaint antes do html2canvas capturar
+  await new Promise(r => setTimeout(r, 150));
+
+  try {
+    const element = document.getElementById('section-relatorios');
+    await html2pdf().set({
+      margin:     [12, 12, 12, 12],
+      filename:   filename,
+      image:      { type: 'jpeg', quality: 0.95 },
+      html2canvas:{ scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false, windowWidth: 1200 },
+      jsPDF:      { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak:  { mode: ['css', 'legacy'], avoid: '.panel, .kpi' },
+    }).from(element).save();
+
+    toast('PDF gerado: ' + filename);
+  } catch (e) {
+    console.error(e);
+    toast('Erro ao gerar PDF: ' + (e.message || 'desconhecido'), 'error', 6000);
+  } finally {
+    document.body.classList.remove('pdf-active');
+    showLoading(false);
+  }
 });
-window.addEventListener('afterprint', () => document.body.classList.remove('printing'));
 
 $('#exportTextBtn').addEventListener('click', () => {
   const f = getReportFilters();
@@ -2286,11 +2499,15 @@ $('#exportTextBtn').addEventListener('click', () => {
     const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
     const muscleEntries = aggregateMuscles(treinos);
     const topMusculos = muscleEntries.slice(0,5).map(([id, c]) => `${muscLabel(id)} (${c})`).join(', ');
+    const valor = alunoValorHora(aluno);
+    const faturamento = valor * treinos.length;
     lines = [
       `📊 *${aluno?.Nome || 'Aluno'} · ${f.label}*`,
       ``,
       `Treinos: *${treinos.length}*`,
       `Dias treinados: *${new Set(treinos.map(t => t.Data)).size}*`,
+      valor ? `Valor/hora: *${formatBRL(valor)}*` : null,
+      valor ? `Faturamento: *${formatBRL(faturamento)}*` : null,
       topMusculos ? `Foco: ${topMusculos}` : null,
       ``,
       `_Datas:_`,
@@ -2316,21 +2533,24 @@ $('#exportTextBtn').addEventListener('click', () => {
     const rank = Object.entries(byAluno)
       .map(([id, c]) => {
         const al = state.alunos.find(a => String(a.ID) === String(id));
-        return { name: al?.Nome || 'Aluno removido', count: c };
+        const valor = alunoValorHora(al);
+        return { name: al?.Nome || 'Aluno removido', count: c, faturamento: valor * c };
       })
       .sort((a,b) => b.count - a.count);
+    const faturamentoTotal = rank.reduce((s, r) => s + r.faturamento, 0);
     lines = [
       `📊 *Relatório Geral · ${f.label}*`,
       ``,
       `Treinos totais: *${treinos.length}*`,
       `Alunos ativos: *${alunosAtivos}/${state.alunos.length}*`,
       `Dias com treinos: *${new Set(treinos.map(t => t.Data)).size}*`,
+      faturamentoTotal ? `Faturamento total: *${formatBRL(faturamentoTotal)}*` : null,
       ``,
       `_Por aluno:_`,
-      ...rank.map(r => `• ${r.name} — ${r.count} treino${r.count !== 1 ? 's' : ''}`),
+      ...rank.map(r => `• ${r.name} — ${r.count} treino${r.count !== 1 ? 's' : ''}${r.faturamento ? ` · ${formatBRL(r.faturamento)}` : ''}`),
       ``,
       `— enviado via FitHub Personal`,
-    ];
+    ].filter(Boolean);
   }
 
   $('#exportText').textContent = lines.join('\n');
