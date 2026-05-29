@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<meta name="apple-mobile-web-app-title" content="FitHub">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>FitHub Personal — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" defer></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #111111;
+    --bg-card: #161616;
+    --bg-input: #1f1f1f;
+    --bg-hover: #1c1c1c;
+    --line: #262626;
+    --line-2: #333333;
+    --text: #f5f5f0;
+    --muted: #a3a3a3;
+    --muted-2: #6b7280;
+    --lime: #bef264;
+    --lime-dim: rgba(190,242,100,0.15);
+    --red: #fb7185;
+    --red-dim: rgba(251,113,133,0.12);
+    --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea { font-family: inherit; }
+  a { color: inherit; }
+
+  /* ============== HEADER ============== */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: var(--lime); border-radius: 6px;
+    display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: #0a0a0a; font-weight: 700; font-size: 16px;
+  }
+  .brand-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; letter-spacing: 0.04em;
+  }
+  .brand-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--lime);
+    padding: 3px 7px; border: 1px solid var(--lime);
+    border-radius: 4px; text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .user-box { display: flex; align-items: center; gap: 12px; }
+  .user-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+  }
+  .user-name strong { color: var(--text); font-weight: 500; }
+  .btn-ghost {
+    background: transparent; border: 1px solid var(--line);
+    color: var(--muted); padding: 8px 14px;
+    border-radius: 6px; font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--line-2); }
+
+  /* ============== TAB BAR ============== */
+  .tabbar {
+    position: sticky; top: 65px; z-index: 40;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .tabbar-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 24px;
+    display: flex; gap: 4px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    background: transparent; border: none; color: var(--muted);
+    padding: 16px 18px;
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px; white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--lime);
+    border-bottom-color: var(--lime);
+  }
+  .tab-btn .badge {
+    display: inline-block;
+    margin-left: 6px;
+    background: var(--line);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 1px 6px; border-radius: 10px;
+    font-weight: 700;
+  }
+  .tab-btn.active .badge { background: var(--lime); color: #0a0a0a; }
+
+  /* ============== MAIN ============== */
+  main {
+    max-width: 1280px; margin: 0 auto;
+    padding: 24px;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px; letter-spacing: 0.02em; line-height: 1;
+  }
+  .section-sub {
+    color: var(--muted); font-size: 13px;
+    margin-top: 4px;
+  }
+  .section-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  /* ============== BUTTONS ============== */
+  .btn {
+    border: none; border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    transition: transform 0.1s, opacity 0.2s, background 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--lime); color: #0a0a0a; }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--bg-card); color: var(--text);
+    border: 1px solid var(--line);
+  }
+  .btn-secondary:hover { border-color: var(--line-2); background: var(--bg-hover); }
+  .btn-danger {
+    background: var(--red-dim); color: var(--red);
+    border: 1px solid rgba(251,113,133,0.3);
+  }
+  .btn-danger:hover { background: rgba(251,113,133,0.2); }
+  .btn-sm { padding: 6px 10px; font-size: 11px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ============== DATE PICKER (Agenda) ============== */
+  .date-nav {
+    display: flex; gap: 6px; align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px;
+  }
+  .date-nav button {
+    background: transparent; border: none; color: var(--muted);
+    padding: 6px 12px; border-radius: 4px; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .date-nav button:hover { background: var(--bg-hover); color: var(--text); }
+  .date-display {
+    padding: 0 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    text-align: center; min-width: 160px;
+  }
+  .date-display strong { color: var(--lime); }
+  .date-pick {
+    background: transparent !important;
+    color: var(--muted);
+    border: none; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 6px 10px; border-radius: 4px;
+  }
+  .date-pick input { display: none; }
+
+  /* ============== AGENDA GRID ============== */
+  .slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .slot {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .slot:hover { border-color: var(--line-2); }
+  .slot.has-checkins { border-color: rgba(190,242,100,0.3); }
+  .slot-head {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .slot-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    color: var(--lime);
+  }
+  .slot-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--muted);
+  }
+  .slot-body { padding: 8px; }
+  .checkin {
+    background: var(--bg-input);
+    border-left: 3px solid var(--lime);
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .checkin:hover { background: var(--bg-hover); }
+  .checkin-name { font-weight: 600; }
+  .checkin-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .gym-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .suggestion {
+    background: transparent;
+    border: 1px dashed var(--line-2);
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    font-size: 11px; color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .suggestion:hover {
+    border-color: var(--lime);
+    color: var(--text);
+    background: var(--lime-dim);
+  }
+  .suggestion-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+  .slot-add {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    color: var(--muted);
+    padding: 8px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: all 0.2s;
+  }
+  .slot-add:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+
+  /* ============== ALUNOS / ACADEMIAS CARDS ============== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+  .item-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+  .item-card:hover { border-color: var(--line-2); }
+  .item-card-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 10px; margin-bottom: 10px;
+  }
+  .item-name {
+    font-size: 17px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .item-name .gym-dot { width: 12px; height: 12px; }
+  .item-meta {
+    color: var(--muted); font-size: 13px;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .item-meta .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted-2);
+  }
+  .schedule-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .schedule-chip {
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .item-actions {
+    display: flex; gap: 6px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .value-tag {
+    background: var(--lime-dim);
+    border: 1px solid rgba(190,242,100,0.3);
+    color: var(--lime);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .kpi-value.money {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .bar-row.with-money {
+    grid-template-columns: 110px minmax(0, 1fr) 36px 90px;
+  }
+  .bar-money {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--lime);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ============== RELATÓRIOS ============== */
+  .report-controls {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: flex-end;
+  }
+  .control-group { display: flex; flex-direction: column; gap: 6px; }
+  .control-group label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .select {
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-size: 14px;
+    min-width: 220px;
+  }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .kpi-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px; line-height: 1;
+    color: var(--lime);
+  }
+  .kpi-value .unit {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px; color: var(--muted);
+    margin-left: 4px;
+  }
+  .kpi-sub {
+    margin-top: 4px;
+    font-size: 11px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .panel-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+
+  /* Calendar grid */
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+  .cal-head {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    padding: 6px 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    background: var(--bg-input);
+    border-radius: 4px;
+    display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted-2);
+    border: 1px solid transparent;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .cal-day.empty { background: transparent; }
+  .cal-day.trained {
+    background: var(--lime);
+    color: #0a0a0a;
+    font-weight: 700;
+    border-color: var(--lime);
+  }
+  .cal-day.today {
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+  /* Heatmap (modo geral) — níveis discretos, sobrevivem ao PDF */
+  .cal-day.heat-low  { background: rgba(190,242,100,0.30); color: var(--text); }
+  .cal-day.heat-mid  { background: rgba(190,242,100,0.60); color: #0a0a0a; font-weight: 700; }
+  .cal-day.heat-high { background: var(--lime); color: #0a0a0a; font-weight: 700; }
+  .cal-count { font-size: 8px; opacity: 0.7; vertical-align: super; }
+  .heat-legend {
+    margin-top: 12px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--muted);
+  }
+  .heat-swatch {
+    display: inline-block; width: 14px; height: 14px;
+    border-radius: 3px; margin-left: 8px;
+  }
+  .heat-swatch.heat-low  { background: rgba(190,242,100,0.30); }
+  .heat-swatch.heat-mid  { background: rgba(190,242,100,0.60); }
+  .heat-swatch.heat-high { background: var(--lime); }
+
+  /* Ranking de alunos — layout 2 linhas (nome em cima, barra embaixo) */
+  .ranking-list { display: flex; flex-direction: column; gap: 12px; }
+  .rank-row { min-width: 0; }
+  .rank-top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 10px; margin-bottom: 5px;
+    font-size: 13px;
+  }
+  .rank-name {
+    font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    min-width: 0; flex: 1;
+  }
+  .rank-stats {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .rank-stats .money { color: var(--lime); }
+  .rank-row .bar-track { height: 14px; }
+
+  /* Bar chart */
+  .bar-row {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) 40px;
+    gap: 10px; align-items: center;
+    margin-bottom: 6px;
+    font-size: 12px;
+    min-width: 0;
+  }
+  .bar-label { color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-track {
+    background: var(--bg-input);
+    height: 18px; border-radius: 3px;
+    position: relative; overflow: hidden;
+    min-width: 0;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--lime);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .bar-count {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  /* Gym distribution rows */
+  .gym-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .gym-row:last-child { border-bottom: none; }
+  .gym-row .gym-dot { width: 12px; height: 12px; }
+  .gym-row-name { flex: 1; font-size: 13px; }
+  .gym-row-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* ============== EMPTY STATE ============== */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon {
+    font-size: 40px;
+    opacity: 0.4;
+    margin-bottom: 12px;
+  }
+  .empty-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .empty-sub { font-size: 13px; margin-bottom: 20px; }
+
+  /* ============== MODAL ============== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 40px 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    width: 100%; max-width: 540px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  .modal-head {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0;
+    background: var(--bg-card);
+    z-index: 1;
+  }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; letter-spacing: 0.02em;
+  }
+  .modal-close {
+    background: transparent; border: none;
+    color: var(--muted); font-size: 24px;
+    padding: 0 6px;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 22px; }
+  .modal-actions {
+    padding: 16px 22px;
+    border-top: 1px solid var(--line);
+    display: flex; gap: 8px; justify-content: flex-end;
+    position: sticky; bottom: 0;
+    background: var(--bg-card);
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none; border-color: var(--lime);
+  }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .muscle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 6px;
+  }
+  .muscle-chip {
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .muscle-chip:hover { border-color: var(--line-2); }
+  .muscle-chip.selected {
+    background: var(--lime-dim);
+    border-color: var(--lime);
+    color: var(--lime);
+    font-weight: 600;
+  }
+
+  .color-swatches {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .swatch {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s;
+  }
+  .swatch:hover { transform: scale(1.08); }
+  .swatch.selected {
+    border-color: var(--text);
+    box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--text);
+  }
+
+  .schedule-editor { display: flex; flex-direction: column; gap: 6px; }
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 32px;
+    gap: 6px; align-items: center;
+  }
+  .schedule-row select, .schedule-row input {
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 6px 8px;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .schedule-row button {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--red);
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 14px;
+  }
+  .schedule-row button:hover { background: var(--red-dim); }
+  .add-schedule-btn {
+    background: transparent;
+    border: 1px dashed var(--line-2);
+    color: var(--muted);
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-top: 4px;
+    width: 100%;
+  }
+  .add-schedule-btn:hover { color: var(--lime); border-color: var(--lime); }
+
+  /* ============== TOAST ============== */
+  .toast-wrap {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    z-index: 200;
+    display: flex; flex-direction: column; gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    max-width: 360px;
+    pointer-events: auto;
+    animation: toastIn 0.25s ease;
+  }
+  .toast.success { border-left-color: var(--lime); }
+  .toast.error { border-left-color: var(--red); color: var(--red); }
+  .toast.info { border-left-color: #60a5fa; }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============== LOADING ============== */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,0.6);
+    z-index: 150;
+    display: none;
+    align-items: center; justify-content: center;
+  }
+  .loading-overlay.open { display: flex; }
+  .spinner-big {
+    width: 36px; height: 36px;
+    border: 3px solid var(--line);
+    border-top-color: var(--lime);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============== EXPORT TEXT BOX ============== */
+  .export-box {
+    background: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: var(--text);
+    max-height: 360px;
+    overflow-y: auto;
+  }
+
+  /* ============== RANGE STRIP / TIMELINE ============== */
+  .strip {
+    display: flex; flex-wrap: wrap; gap: 3px;
+  }
+  .strip-day {
+    background: var(--bg-input);
+    color: var(--muted-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 0;
+    width: 28px;
+    text-align: center;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ============== TREINO LIST (no relatório) ============== */
+  .treino-list {
+    display: flex; flex-direction: column; gap: 4px;
+    max-height: 320px; overflow-y: auto;
+  }
+  .treino-line {
+    display: grid;
+    grid-template-columns: 130px 12px 1fr 1.5fr;
+    gap: 8px; align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    min-width: 0;
+  }
+  .treino-line:last-child { border-bottom: none; }
+  .treino-date {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .treino-where {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .treino-musc {
+    color: var(--muted);
+    font-size: 11px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ============== PRINT HEADER (visível só em PDF) ============== */
+  .print-header { display: none; }
+
+  /* ============== PDF GENERATION MODE ============== */
+  /* Aplicado via JS (classe body.pdf-active) antes de chamar html2pdf.
+     Espelha as regras do @media print abaixo, mas controladas por JS. */
+  body.pdf-active {
+    background: #ffffff !important;
+    color: #0a0a0a !important;
+    overflow: visible !important;
+  }
+  body.pdf-active .topbar,
+  body.pdf-active .tabbar,
+  body.pdf-active .section-head,
+  body.pdf-active .report-controls,
+  body.pdf-active .modal-overlay,
+  body.pdf-active .toast-wrap,
+  body.pdf-active .loading-overlay {
+    display: none !important;
+  }
+  body.pdf-active main { padding: 0 !important; max-width: 100% !important; }
+  body.pdf-active .section { display: none !important; }
+  body.pdf-active .section#section-relatorios { display: block !important; }
+  body.pdf-active .print-header {
+    display: block !important;
+    border-bottom: 2px solid #0a0a0a;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  body.pdf-active .ph-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: #0a0a0a;
+  }
+  body.pdf-active .ph-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #444;
+    margin-top: 2px;
+  }
+  body.pdf-active .kpi,
+  body.pdf-active .panel {
+    background: #ffffff !important;
+    border: 1px solid #d4d4d4 !important;
+    color: #0a0a0a !important;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+  }
+  body.pdf-active .kpi-label,
+  body.pdf-active .panel-title,
+  body.pdf-active .kpi-sub { color: #6b7280 !important; }
+  body.pdf-active .kpi-value { color: #4d7c0f !important; }
+  body.pdf-active .kpi-value .unit { color: #6b7280 !important; }
+  body.pdf-active .kpi-value.money { color: #4d7c0f !important; }
+  body.pdf-active .bar-track { background: #f3f4f6 !important; }
+  body.pdf-active .bar-fill { background: #65a30d !important; }
+  body.pdf-active .bar-label,
+  body.pdf-active .bar-count { color: #0a0a0a !important; }
+  body.pdf-active .bar-money { color: #65a30d !important; }
+  body.pdf-active .cal-day {
+    background: #f9fafb !important;
+    color: #6b7280 !important;
+    border-color: #e5e7eb !important;
+  }
+  body.pdf-active .cal-day.trained { background: #65a30d !important; color: #ffffff !important; }
+  body.pdf-active .cal-day.today { border-color: #65a30d !important; }
+  body.pdf-active .cal-day.heat-low  { background: #e3f2c1 !important; color: #0a0a0a !important; }
+  body.pdf-active .cal-day.heat-mid  { background: #a8d65f !important; color: #0a0a0a !important; }
+  body.pdf-active .cal-day.heat-high { background: #65a30d !important; color: #ffffff !important; }
+  /* No PDF, células com altura fixa compacta (aspect-ratio deixaria quadrados grandes demais) */
+  body.pdf-active .cal-day {
+    aspect-ratio: auto !important;
+    min-height: 44px !important;
+    padding: 3px !important;
+  }
+  body.pdf-active .strip-day.heat-low  { background: #e3f2c1 !important; color: #0a0a0a !important; }
+  body.pdf-active .strip-day.heat-mid  { background: #a8d65f !important; color: #0a0a0a !important; }
+  body.pdf-active .strip-day.heat-high { background: #65a30d !important; color: #ffffff !important; }
+  body.pdf-active .heat-legend { color: #6b7280 !important; }
+  body.pdf-active .heat-swatch.heat-low  { background: #e3f2c1 !important; }
+  body.pdf-active .heat-swatch.heat-mid  { background: #a8d65f !important; }
+  body.pdf-active .heat-swatch.heat-high { background: #65a30d !important; }
+  body.pdf-active .rank-name { color: #0a0a0a !important; }
+  body.pdf-active .rank-stats { color: #6b7280 !important; }
+  body.pdf-active .rank-stats .money { color: #65a30d !important; }
+  body.pdf-active .cal-head { color: #6b7280 !important; }
+  body.pdf-active .gym-row { border-bottom-color: #e5e7eb !important; }
+  body.pdf-active .gym-row-name { color: #0a0a0a !important; }
+  body.pdf-active .gym-row-count { color: #6b7280 !important; }
+  body.pdf-active .treino-line { border-bottom-color: #e5e7eb !important; color: #0a0a0a !important; }
+  body.pdf-active .treino-date,
+  body.pdf-active .treino-musc { color: #6b7280 !important; }
+  body.pdf-active .treino-list { max-height: none !important; overflow: visible !important; }
+  body.pdf-active .strip-day { background: #f3f4f6 !important; color: #6b7280 !important; }
+  body.pdf-active .value-tag {
+    background: #f3f4f6 !important;
+    border-color: #d4d4d4 !important;
+    color: #4d7c0f !important;
+  }
+  body.pdf-active .empty { display: none !important; }
+
+  /* ============== PRINT MODE (PDF export) ============== */
+  @media print {
+    @page { size: A4; margin: 14mm; }
+
+    html, body {
+      background: #ffffff !important;
+      color: #0a0a0a !important;
+      overflow: visible !important;
+    }
+    .topbar, .tabbar, .section-head, .report-controls,
+    .modal-overlay, .toast-wrap, .loading-overlay {
+      display: none !important;
+    }
+    main { padding: 0 !important; max-width: 100% !important; }
+    .section { display: none !important; }
+    .section#section-relatorios { display: block !important; }
+
+    .print-header {
+      display: block !important;
+      border-bottom: 2px solid #0a0a0a;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .ph-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: #0a0a0a;
+    }
+    .ph-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    /* Todos os painéis e cards: fundo branco, borda cinza, texto preto */
+    .kpi, .panel {
+      background: #ffffff !important;
+      border: 1px solid #d4d4d4 !important;
+      color: #0a0a0a !important;
+      page-break-inside: avoid;
+      box-shadow: none !important;
+    }
+    .kpi-label, .panel-title, .kpi-sub {
+      color: #6b7280 !important;
+    }
+    .kpi-value { color: #4d7c0f !important; } /* lime mais escuro pra contraste em impressão */
+    .kpi-value .unit { color: #6b7280 !important; }
+
+    .bar-track { background: #f3f4f6 !important; }
+    .bar-fill { background: #65a30d !important; } /* lime escuro */
+    .bar-label, .bar-count { color: #0a0a0a !important; }
+
+    .cal-day {
+      background: #f9fafb !important;
+      color: #6b7280 !important;
+      border-color: #e5e7eb !important;
+    }
+    .cal-day.trained {
+      background: #65a30d !important;
+      color: #ffffff !important;
+    }
+    .cal-day.today { border-color: #65a30d !important; }
+    .cal-head { color: #6b7280 !important; }
+
+    .gym-row { border-bottom-color: #e5e7eb !important; }
+    .gym-row-name { color: #0a0a0a !important; }
+    .gym-row-count { color: #6b7280 !important; }
+
+    .treino-line { border-bottom-color: #e5e7eb !important; color: #0a0a0a !important; }
+    .treino-date, .treino-musc { color: #6b7280 !important; }
+    .treino-list { max-height: none !important; overflow: visible !important; }
+
+    .strip-day { background: #f3f4f6 !important; color: #6b7280 !important; }
+
+    .kpi-value.money { color: #4d7c0f !important; }
+    .bar-money { color: #65a30d !important; }
+    .value-tag {
+      background: #f3f4f6 !important;
+      border-color: #d4d4d4 !important;
+      color: #4d7c0f !important;
+    }
+
+    .empty { display: none !important; }
+  }
+
+  /* ============== RESPONSIVE ============== */
+  @media (max-width: 720px) {
+    .topbar-inner { padding: 12px 16px; }
+    .tabbar-inner { padding: 0 12px; }
+    .tab-btn { padding: 14px 12px; font-size: 12px; }
+    main { padding: 16px; }
+    .section-title { font-size: 30px; }
+    .user-name { display: none; }
+    .slots-grid { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .field-row { grid-template-columns: 1fr; }
+    .date-display { min-width: 110px; padding: 0 8px; font-size: 11px; }
+    .modal-overlay { padding: 16px; }
+
+    /* ----- Relatórios em mobile ----- */
+    .report-controls {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .control-group { width: 100%; }
+    .select { min-width: 0; width: 100%; }
+    #exportTextBtn { width: 100%; }
+
+    .kpi-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .kpi { padding: 12px 14px; min-width: 0; }
+    .kpi-value { font-size: 30px; }
+
+    .panel {
+      padding: 14px;
+      margin-bottom: 20px;
+      overflow: hidden; /* impede que conteúdo interno vaze e se sobreponha ao próximo painel */
+    }
+    .panel-title { font-size: 10px; margin-bottom: 12px; }
+
+    .calendar { gap: 3px; }
+    .cal-head { font-size: 9px; padding: 4px 0; }
+    .cal-day { font-size: 11px; min-width: 0; }
+
+    .bar-row {
+      grid-template-columns: 80px 1fr 30px;
+      gap: 8px;
+      font-size: 11px;
+      min-width: 0;
+    }
+    .bar-row.with-money {
+      grid-template-columns: 70px minmax(0, 1fr) 26px 70px;
+      gap: 6px;
+    }
+    .bar-money { font-size: 10px; }
+    .bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { min-width: 0; }
+
+    .gym-row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Treino-line vira layout 2 linhas em mobile */
+    .treino-line {
+      grid-template-columns: 110px 1fr;
+      grid-template-rows: auto auto;
+      gap: 4px 8px;
+      align-items: start;
+    }
+    .treino-line .gym-dot { display: none; }
+    .treino-line .treino-date { grid-column: 1; grid-row: 1; }
+    .treino-line .treino-where { grid-column: 2; grid-row: 1; font-weight: 600; }
+    .treino-line .treino-musc {
+      grid-column: 1 / -1; grid-row: 2;
+      white-space: normal;
+      font-size: 10px;
+    }
+
+    /* Strip-day: garante quebra ordenada */
+    .strip-day { width: 22px; font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== TOPBAR ============== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">F</div>
+      <div class="brand-name">FITHUB</div>
+      <div class="brand-tag">Personal</div>
+    </a>
+    <div class="user-box">
+      <div class="user-name">Logado como <strong id="userNameLabel">—</strong></div>
+      <button class="btn-ghost" id="logoutBtn">Sair</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TABS ============== -->
+<div class="tabbar">
+  <div class="tabbar-inner">
+    <button class="tab-btn active" data-tab="agenda">Agenda</button>
+    <button class="tab-btn" data-tab="alunos">Alunos <span class="badge" id="badgeAlunos">0</span></button>
+    <button class="tab-btn" data-tab="academias">Academias <span class="badge" id="badgeAcademias">0</span></button>
+    <button class="tab-btn" data-tab="relatorios">Relatórios</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============== TAB: AGENDA ============== -->
+  <section class="section active" id="section-agenda">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">AGENDA.</h2>
+        <div class="section-sub" id="agendaWeekday">—</div>
+      </div>
+      <div class="section-actions">
+        <div class="date-nav">
+          <button id="dateToday" title="Hoje">●</button>
+          <button id="datePrev">‹</button>
+          <div class="date-display" id="dateDisplay">—</div>
+          <button id="dateNext">›</button>
+          <label class="date-pick">
+            📅 <input type="date" id="datePicker">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="slots-grid" id="slotsGrid"></div>
+  </section>
+
+  <!-- ============== TAB: ALUNOS ============== -->
+  <section class="section" id="section-alunos">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">ALUNOS.</h2>
+        <div class="section-sub">Cadastro e horários fixos.</div>
+      </div>
+      <div class="section-actions">
+        <button class="btn btn-primary" id="newAlunoBtn">+ Novo Aluno</button>
+      </div>
+    </div>
+    <div id="alunosContent"></div>
+  </section>
+
+  <!-- ============== TAB: ACADEMIAS ============== -->
+  <section class="section" id="section-academias">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">ACADEMIAS.</h2>
+        <div class="section-sub">Locais onde você atende.</div>
+      </div>
+      <div class="section-actions">
+        <button class="btn btn-primary" id="newAcademiaBtn">+ Nova Academia</button>
+      </div>
+    </div>
+    <div id="academiasContent"></div>
+  </section>
+
+  <!-- ============== TAB: RELATÓRIOS ============== -->
+  <section class="section" id="section-relatorios">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">RELATÓRIOS.</h2>
+        <div class="section-sub">Visão por aluno ou geral, em mês ou período customizado.</div>
+      </div>
+    </div>
+    <div class="report-controls">
+      <div class="control-group">
+        <label>Aluno</label>
+        <select class="select" id="reportAluno"></select>
+      </div>
+      <div class="control-group">
+        <label>Período</label>
+        <select class="select" id="reportPeriodMode">
+          <option value="month">Mês inteiro</option>
+          <option value="range">Período customizado</option>
+        </select>
+      </div>
+      <div class="control-group" id="reportMonthGroup">
+        <label>Mês</label>
+        <select class="select" id="reportMonth"></select>
+      </div>
+      <div class="control-group" id="reportFromGroup" style="display:none">
+        <label>De</label>
+        <input type="date" class="select" id="reportFrom">
+      </div>
+      <div class="control-group" id="reportToGroup" style="display:none">
+        <label>Até</label>
+        <input type="date" class="select" id="reportTo">
+      </div>
+      <button class="btn btn-secondary" id="exportTextBtn">Texto</button>
+      <button class="btn btn-primary" id="exportPdfBtn">Exportar PDF</button>
+    </div>
+    <div id="reportContent"></div>
+  </section>
+
+</main>
+
+<!-- ============== MODAL: CHECK-IN ============== -->
+<div class="modal-overlay" id="modal-checkin">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="checkinTitle">Registrar treino</div>
+      <button class="modal-close" data-close>✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ci_id">
+      <div class="field-row">
+        <div class="field">
+          <label>Data</label>
+          <input type="date" id="ci_data">
+        </div>
+        <div class="field">
+          <label>Horário</label>
+          <input type="time" id="ci_horario">
+        </div>
+      </div>
+      <div class="field">
+        <label>Aluno</label>
+        <select id="ci_aluno"></select>
+      </div>
+      <div class="field">
+        <label>Academia</label>
+        <select id="ci_academia"></select>
+      </div>
+      <div class="field">
+        <label>Grupos musculares</label>
+        <div class="muscle-grid" id="ci_muscles"></div>
+      </div>
+      <div class="field">
+        <label>Observações (opcional)</label>
+        <textarea id="ci_obs" placeholder="Carga, sensações, evolução..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="ci_delete" style="margin-right:auto; display:none">Excluir</button>
+      <button class="btn btn-secondary btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="ci_save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== MODAL: ALUNO ============== -->
+<div class="modal-overlay" id="modal-aluno">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="alunoTitle">Novo aluno</div>
+      <button class="modal-close" data-close>✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="al_id">
+      <div class="field">
+        <label>Nome</label>
+        <input type="text" id="al_nome" placeholder="Nome completo">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>WhatsApp</label>
+          <input type="text" id="al_whatsapp" placeholder="(31) 9 9999-9999">
+        </div>
+        <div class="field">
+          <label>Objetivo</label>
+          <input type="text" id="al_objetivo" placeholder="Hipertrofia, emagrecimento...">
+        </div>
+      </div>
+      <div class="field">
+        <label>Valor por hora (R$)</label>
+        <input type="number" id="al_valorHora" placeholder="0,00" step="0.01" min="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>Horários fixos (opcional)</label>
+        <div class="schedule-editor" id="al_schedule"></div>
+        <button class="add-schedule-btn" id="al_addSchedule">+ Adicionar horário</button>
+      </div>
+      <div class="field">
+        <label>Observações</label>
+        <textarea id="al_obs" placeholder="Lesões, restrições, preferências..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="al_delete" style="margin-right:auto; display:none">Excluir</button>
+      <button class="btn btn-secondary btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="al_save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== MODAL: ACADEMIA ============== -->
+<div class="modal-overlay" id="modal-academia">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="acadTitle">Nova academia</div>
+      <button class="modal-close" data-close>✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ac_id">
+      <div class="field">
+        <label>Nome</label>
+        <input type="text" id="ac_nome" placeholder="Nome da academia">
+      </div>
+      <div class="field">
+        <label>Cor de identificação</label>
+        <div class="color-swatches" id="ac_colors"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="ac_delete" style="margin-right:auto; display:none">Excluir</button>
+      <button class="btn btn-secondary btn-sm" data-close>Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="ac_save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== MODAL: EXPORT ============== -->
+<div class="modal-overlay" id="modal-export">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Texto para WhatsApp</div>
+      <button class="modal-close" data-close>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="export-box" id="exportText">—</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" data-close>Fechar</button>
+      <button class="btn btn-primary btn-sm" id="copyExport">Copiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TOAST + LOADING ============== -->
+<div class="toast-wrap" id="toastWrap"></div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner-big"></div>
+</div>
+
+<script src="api.js"></script>
+<script>
+/* ===================================================================
+   FitHub Personal — Dashboard SPA
+   =================================================================== */
+
+if (!Session.requireLogin()) { /* redirected */ }
+
+/* ===================== STATE ===================== */
+const state = {
+  alunos: [],
+  academias: [],
+  treinos: [],
+  loaded: false,
+  currentDate: todayISO(),
+  currentTab: 'agenda',
+};
+
+/* ===================== HELPERS ===================== */
+function $(sel, parent = document) { return parent.querySelector(sel); }
+function $$(sel, parent = document) { return Array.from(parent.querySelectorAll(sel)); }
+
+// força valor a string (evita .replace etc em number/bool do Sheets)
+function s(v) { return v == null ? '' : String(v); }
+
+// normaliza Musculos vindos da planilha (pode ser array OU string CSV)
+function muscArray(m) {
+  if (Array.isArray(m)) return m;
+  if (typeof m === 'string') return m.split(',').map(x => x.trim()).filter(Boolean);
+  return [];
+}
+
+// normaliza Horarios (pode ser array, JSON string, ou vazio)
+function horariosArray(h) {
+  if (Array.isArray(h)) return h;
+  if (typeof h === 'string' && h.trim()) {
+    try { const parsed = JSON.parse(h); return Array.isArray(parsed) ? parsed : []; }
+    catch { return []; }
+  }
+  return [];
+}
+
+// Sheets converte strings de data/hora em Date objects internos.
+// Ao serializar em JSON, viram ISO ("2026-05-22T03:00:00.000Z").
+// Esses helpers desfazem essa conversão pra YYYY-MM-DD e HH:MM.
+function normDate(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
+  }
+  const str = String(v);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) return str.slice(0, 10);
+  return str;
+}
+function normTime(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    return `${String(v.getHours()).padStart(2,'0')}:${String(v.getMinutes()).padStart(2,'0')}`;
+  }
+  const str = String(v);
+  if (/^\d{1,2}:\d{2}/.test(str)) {
+    const [h, m] = str.split(':');
+    return `${h.padStart(2,'0')}:${m.slice(0,2)}`;
+  }
+  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+    const d = new Date(str);
+    if (!isNaN(d)) {
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+  }
+  return str;
+}
+function normalizeTreinos(items) {
+  return (items || []).map(t => ({
+    ...t,
+    Data: normDate(t.Data),
+    Horario: normTime(t.Horario),
+  }));
+}
+
+// Formata valor em BRL (R$ 0,00)
+function formatBRL(value) {
+  const n = Number(value) || 0;
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+// Valor por hora do aluno (0 se não definido)
+function alunoValorHora(aluno) { return Number(aluno?.ValorHora) || 0; }
+
+// Calcula faturamento total de uma lista de treinos
+// (1 treino = 1 hora = 1 × valor_hora do aluno daquele treino)
+function faturamentoTreinos(treinos) {
+  return treinos.reduce((sum, t) => {
+    const al = state.alunos.find(a => String(a.ID) === String(t.AlunoId));
+    return sum + alunoValorHora(al);
+  }, 0);
+}
+
+function toast(msg, type = 'success', ms = 3000) {
+  const wrap = $('#toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.2s'; }, ms - 200);
+  setTimeout(() => el.remove(), ms);
+}
+function showLoading(on) {
+  $('#loadingOverlay').classList.toggle('open', on);
+}
+function openModal(id) {
+  $(`#modal-${id}`).classList.add('open');
+}
+function closeAllModals() {
+  $$('.modal-overlay').forEach(m => m.classList.remove('open'));
+}
+
+/* ===================== HEADER ===================== */
+$('#userNameLabel').textContent = Session.nome || Session.email;
+$('#logoutBtn').addEventListener('click', () => {
+  if (confirm('Sair da conta?')) {
+    Session.clear();
+    window.location.replace('login.html');
+  }
+});
+
+/* ===================== TABS ===================== */
+function setTab(tab) {
+  state.currentTab = tab;
+  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  $$('.section').forEach(s => s.classList.toggle('active', s.id === `section-${tab}`));
+  location.hash = tab;
+  if (tab === 'agenda')      renderAgenda();
+  if (tab === 'alunos')      renderAlunos();
+  if (tab === 'academias')   renderAcademias();
+  if (tab === 'relatorios')  renderReportsTab();
+}
+$$('.tab-btn').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+window.addEventListener('hashchange', () => {
+  const t = location.hash.replace('#','');
+  if (['agenda','alunos','academias','relatorios'].includes(t)) setTab(t);
+});
+
+/* ===================== INITIAL LOAD ===================== */
+async function loadAll() {
+  showLoading(true);
+  try {
+    const [a, g, t] = await Promise.all([
+      API.list('alunos'),
+      API.list('academias'),
+      API.list('treinos'),
+    ]);
+    state.alunos = (a.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
+    state.academias = (g.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
+    state.treinos = normalizeTreinos(t.items);
+    state.loaded = true;
+
+    $('#badgeAlunos').textContent = state.alunos.length;
+    $('#badgeAcademias').textContent = state.academias.length;
+
+    const initialTab = location.hash.replace('#','') || 'agenda';
+    setTab(['agenda','alunos','academias','relatorios'].includes(initialTab) ? initialTab : 'agenda');
+  } catch (e) {
+    toast('Erro ao carregar: ' + e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+}
+
+/* ===================== AGENDA ===================== */
+const dateDisplay = $('#dateDisplay');
+const datePicker = $('#datePicker');
+
+function setDate(iso) {
+  state.currentDate = iso;
+  const [y,m,d] = iso.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  dateDisplay.innerHTML = `<strong>${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}</strong> · ${y}`;
+  datePicker.value = iso;
+  $('#agendaWeekday').textContent = WEEKDAYS[dt.getDay()].label + (iso === todayISO() ? ' · hoje' : '');
+  if (state.currentTab === 'agenda') renderAgenda();
+}
+$('#dateToday').addEventListener('click', () => setDate(todayISO()));
+$('#datePrev').addEventListener('click', () => setDate(shiftDate(state.currentDate, -1)));
+$('#dateNext').addEventListener('click', () => setDate(shiftDate(state.currentDate,  1)));
+datePicker.addEventListener('change', (e) => {
+  if (e.target.value) setDate(e.target.value);
+});
+function shiftDate(iso, days) {
+  const [y,m,d] = iso.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  dt.setDate(dt.getDate() + days);
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
+
+function renderAgenda() {
+  const grid = $('#slotsGrid');
+  const dayTreinos = state.treinos.filter(t => t.Data === state.currentDate);
+  const weekday = weekdayFromISO(state.currentDate);
+
+  grid.innerHTML = HOUR_SLOTS.map(slot => {
+    const checkins = dayTreinos.filter(t => slotOfTime(t.Horario) === slot);
+    const suggestedAlunos = state.alunos.filter(al => {
+      const horarios = horariosArray(al.Horarios);
+      return horarios.some(h =>
+        h.weekday === weekday && slotOfTime(h.time) === slot
+      );
+    }).filter(al => !checkins.some(c => c.AlunoId === al.ID));
+
+    return `
+      <div class="slot ${checkins.length ? 'has-checkins' : ''}">
+        <div class="slot-head">
+          <div class="slot-time">${slot}</div>
+          <div class="slot-count">${checkins.length ? `${checkins.length} treino${checkins.length>1?'s':''}` : ''}</div>
+        </div>
+        <div class="slot-body">
+          ${checkins.map(c => renderCheckin(c)).join('')}
+          ${suggestedAlunos.map(al => renderSuggestion(al, slot)).join('')}
+          <button class="slot-add" data-slot="${slot}">+ Check-in</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // bind add buttons
+  $$('#slotsGrid .slot-add').forEach(btn => {
+    btn.addEventListener('click', () => openCheckinModal({ horario: btn.dataset.slot, data: state.currentDate }));
+  });
+  $$('#slotsGrid .checkin').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      const treino = state.treinos.find(t => String(t.ID) === String(id));
+      if (treino) openCheckinModal({ treino });
+    });
+  });
+  $$('#slotsGrid .suggestion').forEach(el => {
+    el.addEventListener('click', () => {
+      openCheckinModal({
+        horario: el.dataset.slot,
+        data: state.currentDate,
+        alunoId: el.dataset.aluno,
+      });
+    });
+  });
+}
+
+function renderCheckin(t) {
+  const aluno = state.alunos.find(a => String(a.ID) === String(t.AlunoId));
+  const acad = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
+  const cor = gymColor(acad?.Cor || 'lime').hex;
+  const muscs = muscArray(t.Musculos).slice(0,3);
+  return `
+    <div class="checkin" data-id="${t.ID}">
+      <div class="checkin-name">${escapeHTML(aluno?.Nome || 'Aluno removido')}</div>
+      <div class="checkin-meta">
+        <span class="gym-dot" style="background:${cor}"></span>
+        <span>${escapeHTML(acad?.Nome || '—')}</span>
+        ${muscs.length ? `· ${muscs.map(m => muscLabel(m)).join(', ')}` : ''}
+      </div>
+    </div>
+  `;
+}
+function renderSuggestion(al, slot) {
+  return `
+    <div class="suggestion" data-aluno="${al.ID}" data-slot="${slot}">
+      <span>${escapeHTML(al.Nome)}</span>
+      <span class="suggestion-label">SUGESTÃO</span>
+    </div>
+  `;
+}
+function muscLabel(id) {
+  return (MUSCLE_GROUPS.find(m => m.id === id)?.label) || id;
+}
+function escapeHTML(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ===================== CHECK-IN MODAL ===================== */
+function openCheckinModal({ treino, alunoId, horario, data } = {}) {
+  $('#ci_id').value = treino?.ID || '';
+  $('#checkinTitle').textContent = treino ? 'Editar treino' : 'Registrar treino';
+  $('#ci_delete').style.display = treino ? 'inline-flex' : 'none';
+
+  $('#ci_data').value = treino?.Data || data || todayISO();
+  $('#ci_horario').value = treino?.Horario || horario || '08:00';
+
+  const alunoSelect = $('#ci_aluno');
+  alunoSelect.innerHTML = '<option value="">Selecione...</option>' +
+    state.alunos.map(a => `<option value="${a.ID}">${escapeHTML(a.Nome)}</option>`).join('');
+  alunoSelect.value = treino?.AlunoId || alunoId || '';
+
+  const acadSelect = $('#ci_academia');
+  acadSelect.innerHTML = '<option value="">Selecione...</option>' +
+    state.academias.map(a => `<option value="${a.ID}">${escapeHTML(a.Nome)}</option>`).join('');
+  acadSelect.value = treino?.AcademiaId || (state.academias[0]?.ID || '');
+
+  const selectedMuscs = muscArray(treino?.Musculos);
+  $('#ci_muscles').innerHTML = MUSCLE_GROUPS.map(m => `
+    <div class="muscle-chip ${selectedMuscs.includes(m.id) ? 'selected' : ''}" data-id="${m.id}">${m.label}</div>
+  `).join('');
+  $$('#ci_muscles .muscle-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  $('#ci_obs').value = treino?.Observacoes || '';
+  openModal('checkin');
+}
+
+$('#ci_save').addEventListener('click', async () => {
+  const id = $('#ci_id').value;
+  const alunoId = $('#ci_aluno').value;
+  const acadId = $('#ci_academia').value;
+  if (!alunoId) return toast('Selecione um aluno.', 'error');
+  if (!acadId) return toast('Selecione uma academia.', 'error');
+
+  const muscs = $$('#ci_muscles .muscle-chip.selected').map(c => c.dataset.id);
+  const fields = {
+    alunoId,
+    academiaId: acadId,
+    data: $('#ci_data').value,
+    horario: $('#ci_horario').value,
+    musculos: muscs,                // array (backend faz .join)
+    obs: $('#ci_obs').value.trim(), // backend lê body.obs
+  };
+
+  showLoading(true);
+  try {
+    if (id) {
+      await API.update('treino', id, fields);
+      toast('Treino atualizado.');
+    } else {
+      await API.create('treino', fields);
+      toast('Treino registrado.');
+    }
+    closeAllModals();
+    await reloadTreinos();
+    if (state.currentTab === 'agenda') renderAgenda();
+    if (state.currentTab === 'relatorios') renderReportsTab();
+  } catch (e) {
+    toast(e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+});
+
+$('#ci_delete').addEventListener('click', async () => {
+  const id = $('#ci_id').value;
+  if (!id) return;
+  if (!confirm('Excluir este treino? Esta ação não pode ser desfeita.')) return;
+  showLoading(true);
+  try {
+    await API.remove('treino', id);
+    toast('Treino excluído.');
+    closeAllModals();
+    await reloadTreinos();
+    renderAgenda();
+  } catch (e) {
+    toast(e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+});
+
+async function reloadTreinos() {
+  const t = await API.list('treinos');
+  state.treinos = normalizeTreinos(t.items);
+}
+
+/* ===================== ALUNOS ===================== */
+function renderAlunos() {
+  const root = $('#alunosContent');
+  if (!state.alunos.length) {
+    root.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">👤</div>
+        <div class="empty-title">Nenhum aluno ainda</div>
+        <div class="empty-sub">Cadastre seu primeiro aluno pra começar a registrar treinos.</div>
+        <button class="btn btn-primary" onclick="document.getElementById('newAlunoBtn').click()">+ Cadastrar aluno</button>
+      </div>`;
+    return;
+  }
+  root.innerHTML = `<div class="cards-grid">${state.alunos.map(al => {
+    const horarios = horariosArray(al.Horarios);
+    const wppRaw = s(al.WhatsApp);
+    const wppLink = wppRaw ? wppRaw.replace(/\D/g,'') : '';
+    const valor = alunoValorHora(al);
+    return `
+      <div class="item-card">
+        <div class="item-card-head">
+          <div class="item-name">${escapeHTML(al.Nome)}</div>
+          ${valor ? `<div class="value-tag">${formatBRL(valor)}/h</div>` : ''}
+        </div>
+        ${al.Objetivo ? `<div class="item-meta">🎯 <span>${escapeHTML(al.Objetivo)}</span></div>` : ''}
+        ${wppRaw ? `<div class="item-meta">📱 <span class="mono">${escapeHTML(wppRaw)}</span></div>` : ''}
+        ${al.Observacoes ? `<div class="item-meta">📝 <span>${escapeHTML(al.Observacoes)}</span></div>` : ''}
+        ${horarios.length ? `<div class="schedule-chips">${horarios.map(h =>
+          `<span class="schedule-chip">${WEEKDAYS[h.weekday]?.short || '?'} ${h.time}</span>`
+        ).join('')}</div>` : ''}
+        <div class="item-actions">
+          <button class="btn btn-secondary btn-sm" data-act="edit" data-id="${al.ID}">Editar</button>
+          <button class="btn btn-primary btn-sm" data-act="register" data-id="${al.ID}">+ Registrar</button>
+          ${wppLink ? `<a class="btn btn-secondary btn-sm" href="https://wa.me/55${wppLink}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('')}</div>`;
+
+  $$('#alunosContent [data-act="edit"]').forEach(b => {
+    b.addEventListener('click', () => openAlunoModal(b.dataset.id));
+  });
+  $$('#alunosContent [data-act="register"]').forEach(b => {
+    b.addEventListener('click', () => openCheckinModal({ alunoId: b.dataset.id, data: todayISO() }));
+  });
+}
+
+$('#newAlunoBtn').addEventListener('click', () => openAlunoModal());
+
+function openAlunoModal(id) {
+  const al = id ? state.alunos.find(a => String(a.ID) === String(id)) : null;
+  $('#al_id').value = al?.ID || '';
+  $('#alunoTitle').textContent = al ? 'Editar aluno' : 'Novo aluno';
+  $('#al_delete').style.display = al ? 'inline-flex' : 'none';
+  $('#al_nome').value = al?.Nome || '';
+  $('#al_whatsapp').value = al?.WhatsApp || '';
+  $('#al_objetivo').value = al?.Objetivo || '';
+  $('#al_valorHora').value = al?.ValorHora ? Number(al.ValorHora).toString() : '';
+  $('#al_obs').value = al?.Observacoes || '';
+
+  const horarios = horariosArray(al?.Horarios);
+  renderScheduleEditor(horarios);
+  openModal('aluno');
+}
+
+function renderScheduleEditor(horarios) {
+  const root = $('#al_schedule');
+  root.innerHTML = horarios.map((h, i) => scheduleRowHTML(i, h)).join('');
+  bindScheduleRows();
+}
+function scheduleRowHTML(i, h = { weekday: 1, time: '08:00' }) {
+  return `
+    <div class="schedule-row" data-idx="${i}">
+      <select class="sch-day">
+        ${WEEKDAYS.map(w => `<option value="${w.id}" ${w.id === h.weekday ? 'selected' : ''}>${w.label}</option>`).join('')}
+      </select>
+      <input type="time" class="sch-time" value="${h.time || '08:00'}">
+      <button type="button" class="sch-remove">✕</button>
+    </div>
+  `;
+}
+function bindScheduleRows() {
+  $$('#al_schedule .sch-remove').forEach(b => {
+    b.addEventListener('click', () => {
+      b.closest('.schedule-row').remove();
+    });
+  });
+}
+$('#al_addSchedule').addEventListener('click', () => {
+  const rows = $$('#al_schedule .schedule-row').length;
+  $('#al_schedule').insertAdjacentHTML('beforeend', scheduleRowHTML(rows));
+  bindScheduleRows();
+});
+
+function collectSchedule() {
+  return $$('#al_schedule .schedule-row').map(row => ({
+    weekday: parseInt(row.querySelector('.sch-day').value, 10),
+    time: row.querySelector('.sch-time').value || '08:00',
+  }));
+}
+
+$('#al_save').addEventListener('click', async () => {
+  const id = $('#al_id').value;
+  const nome = $('#al_nome').value.trim();
+  if (!nome) return toast('Nome é obrigatório.', 'error');
+
+  const fields = {
+    nome,
+    whatsapp: $('#al_whatsapp').value.trim(),
+    objetivo: $('#al_objetivo').value.trim(),
+    valorHora: parseFloat($('#al_valorHora').value) || 0,
+    obs: $('#al_obs').value.trim(),       // backend lê body.obs
+    horarios: collectSchedule(),          // array (backend faz JSON.stringify)
+  };
+  showLoading(true);
+  try {
+    if (id) {
+      await API.update('aluno', id, fields);
+      toast('Aluno atualizado.');
+    } else {
+      await API.create('aluno', fields);
+      toast('Aluno cadastrado.');
+    }
+    closeAllModals();
+    const a = await API.list('alunos');
+    state.alunos = (a.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
+    $('#badgeAlunos').textContent = state.alunos.length;
+    if (state.currentTab === 'alunos') renderAlunos();
+    if (state.currentTab === 'agenda') renderAgenda();
+  } catch (e) {
+    toast(e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+});
+
+$('#al_delete').addEventListener('click', async () => {
+  const id = $('#al_id').value;
+  if (!id) return;
+  if (!confirm('Excluir este aluno? Histórico de treinos será preservado.')) return;
+  showLoading(true);
+  try {
+    await API.remove('aluno', id);
+    toast('Aluno removido.');
+    closeAllModals();
+    const a = await API.list('alunos');
+    state.alunos = (a.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
+    $('#badgeAlunos').textContent = state.alunos.length;
+    renderAlunos();
+  } catch (e) {
+    toast(e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+});
+
+/* ===================== ACADEMIAS ===================== */
+function renderAcademias() {
+  const root = $('#academiasContent');
+  if (!state.academias.length) {
+    root.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🏋️</div>
+        <div class="empty-title">Nenhuma academia ainda</div>
+        <div class="empty-sub">Cadastre os locais onde você atende.</div>
+        <button class="btn btn-primary" onclick="document.getElementById('newAcademiaBtn').click()">+ Cadastrar academia</button>
+      </div>`;
+    return;
+  }
+  root.innerHTML = `<div class="cards-grid">${state.academias.map(ac => {
+    const cor = gymColor(ac.Cor || 'lime').hex;
+    const count = state.treinos.filter(t => String(t.AcademiaId) === String(ac.ID)).length;
+    return `
+      <div class="item-card">
+        <div class="item-card-head">
+          <div class="item-name">
+            <span class="gym-dot" style="background:${cor}"></span>
+            ${escapeHTML(ac.Nome)}
+          </div>
+        </div>
+        <div class="item-meta"><span class="mono">${count} treino${count !== 1 ? 's' : ''} registrado${count !== 1 ? 's' : ''}</span></div>
+        <div class="item-actions">
+          <button class="btn btn-secondary btn-sm" data-act="edit" data-id="${ac.ID}">Editar</button>
+        </div>
+      </div>
+    `;
+  }).join('')}</div>`;
+  $$('#academiasContent [data-act="edit"]').forEach(b => {
+    b.addEventListener('click', () => openAcademiaModal(b.dataset.id));
+  });
+}
+
+$('#newAcademiaBtn').addEventListener('click', () => openAcademiaModal());
+
+function openAcademiaModal(id) {
+  const ac = id ? state.academias.find(a => String(a.ID) === String(id)) : null;
+  $('#ac_id').value = ac?.ID || '';
+  $('#acadTitle').textContent = ac ? 'Editar academia' : 'Nova academia';
+  $('#ac_delete').style.display = ac ? 'inline-flex' : 'none';
+  $('#ac_nome').value = ac?.Nome || '';
+
+  const selectedColor = ac?.Cor || 'lime';
+  $('#ac_colors').innerHTML = GYM_COLORS.map(c => `
+    <div class="swatch ${c.id === selectedColor ? 'selected' : ''}"
+         data-color="${c.id}"
+         style="background:${c.hex}"
+         title="${c.name}"></div>
+  `).join('');
+  $$('#ac_colors .swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      $$('#ac_colors .swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+    });
+  });
+  openModal('academia');
+}
+
+$('#ac_save').addEventListener('click', async () => {
+  const id = $('#ac_id').value;
+  const nome = $('#ac_nome').value.trim();
+  if (!nome) return toast('Nome é obrigatório.', 'error');
+  const cor = $('#ac_colors .swatch.selected')?.dataset.color || 'lime';
+  showLoading(true);
+  try {
+    if (id) {
+      await API.update('academia', id, { nome, cor });
+      toast('Academia atualizada.');
+    } else {
+      await API.create('academia', { nome, cor });
+      toast('Academia cadastrada.');
+    }
+    closeAllModals();
+    const g = await API.list('academias');
+    state.academias = (g.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
+    $('#badgeAcademias').textContent = state.academias.length;
+    if (state.currentTab === 'academias') renderAcademias();
+    if (state.currentTab === 'agenda') renderAgenda();
+  } catch (e) {
+    toast(e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+});
+
+$('#ac_delete').addEventListener('click', async () => {
+  const id = $('#ac_id').value;
+  if (!id) return;
+  if (!confirm('Excluir esta academia? Treinos vinculados continuarão registrados mas sem o local.')) return;
+  showLoading(true);
+  try {
+    await API.remove('academia', id);
+    toast('Academia removida.');
+    closeAllModals();
+    const g = await API.list('academias');
+    state.academias = (g.items || []).filter(x => x.Ativo !== false && x.Ativo !== 'FALSE');
+    $('#badgeAcademias').textContent = state.academias.length;
+    renderAcademias();
+  } catch (e) {
+    toast(e.message, 'error', 5000);
+  } finally {
+    showLoading(false);
+  }
+});
+
+/* ===================== RELATÓRIOS ===================== */
+function renderReportsTab() {
+  // popula seletor de aluno (com opção "Todos")
+  const alunoSel = $('#reportAluno');
+  const wantOptions = 1 + state.alunos.length;
+  if (alunoSel.options.length !== wantOptions) {
+    alunoSel.innerHTML =
+      `<option value="">— Todos os alunos —</option>` +
+      state.alunos.map(a => `<option value="${a.ID}">${escapeHTML(a.Nome)}</option>`).join('');
+  }
+
+  // popula seletor de mês (últimos 12)
+  const monthSel = $('#reportMonth');
+  if (!monthSel.options.length) {
+    const months = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const dt = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const ym = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+      months.push(ym);
+    }
+    monthSel.innerHTML = months.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
+  }
+
+  // defaults pros date pickers
+  if (!$('#reportFrom').value) {
+    const now = new Date();
+    const firstOfMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    $('#reportFrom').value = firstOfMonth;
+    $('#reportTo').value = todayISO();
+  }
+
+  if (!state.alunos.length && !state.treinos.length) {
+    $('#reportContent').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">Sem dados ainda</div>
+        <div class="empty-sub">Cadastre alunos e registre treinos pra ver relatórios.</div>
+      </div>`;
+    return;
+  }
+
+  renderReportContent();
+}
+
+// retorna { mode, alunoId, range:{from,to}, label }
+function getReportFilters() {
+  const alunoId = $('#reportAluno').value;       // '' = todos
+  const mode = $('#reportPeriodMode').value;     // 'month' | 'range'
+  if (mode === 'month') {
+    const month = $('#reportMonth').value;
+    const [y, m] = month.split('-').map(Number);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    return {
+      mode, alunoId,
+      range: {
+        from: `${month}-01`,
+        to: `${month}-${String(daysInMonth).padStart(2,'0')}`,
+        year: y, month: m, daysInMonth,
+      },
+      label: monthLabel(month),
+      isFullMonth: true,
+    };
+  }
+  const from = $('#reportFrom').value || todayISO();
+  const to   = $('#reportTo').value   || todayISO();
+  return {
+    mode, alunoId,
+    range: { from, to },
+    label: `${fmtDate(from)} — ${fmtDate(to)}`,
+    isFullMonth: false,
+  };
+}
+
+function filterTreinos(filters) {
+  return state.treinos.filter(t => {
+    if (filters.alunoId && String(t.AlunoId) !== String(filters.alunoId)) return false;
+    if (!t.Data) return false;
+    if (t.Data < filters.range.from) return false;
+    if (t.Data > filters.range.to) return false;
+    return true;
+  });
+}
+
+function renderReportContent() {
+  const f = getReportFilters();
+  const treinos = filterTreinos(f);
+
+  if (f.alunoId) {
+    renderReportSingleAluno(f, treinos);
+  } else {
+    renderReportGeneral(f, treinos);
+  }
+}
+
+/* ===== Relatório de UM aluno ===== */
+function renderReportSingleAluno(f, treinos) {
+  const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
+  if (!aluno) return;
+
+  const diasTreinados = new Set(treinos.map(t => t.Data)).size;
+  const today = new Date();
+  const horarios = horariosArray(aluno.Horarios);
+
+  // Aderência: dias com sessão esperada dentro do range vs treinos realizados
+  let treinosEsperados = null, aderencia = null;
+  if (horarios.length) {
+    treinosEsperados = countExpectedInRange(horarios, f.range.from, f.range.to, today);
+    if (treinosEsperados > 0) {
+      aderencia = Math.min(100, Math.round((treinos.length / treinosEsperados) * 100));
+    }
+  }
+
+  // Calendar (só faz sentido se for mês inteiro; se for range, vira lista de dias)
+  let calendarPanel = '';
+  if (f.isFullMonth) {
+    calendarPanel = renderMonthCalendar(f, treinos, today);
+  } else {
+    calendarPanel = renderRangeStrip(f, treinos);
+  }
+
+  const muscleEntries = aggregateMuscles(treinos);
+  const gymEntries    = aggregateGyms(treinos);
+
+  const totalDays = Math.max(1, daysBetween(f.range.from, f.range.to) + 1);
+
+  $('#reportContent').innerHTML = `
+    <div class="print-header">
+      <div class="ph-title">FitHub Personal · Relatório</div>
+      <div class="ph-meta">
+        <strong>${escapeHTML(aluno.Nome)}</strong> ·
+        ${escapeHTML(f.label)} ·
+        gerado em ${fmtDate(todayISO())}
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Treinos</div>
+        <div class="kpi-value">${treinos.length}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Dias treinados</div>
+        <div class="kpi-value">${diasTreinados}<span class="unit">/${totalDays}</span></div>
+      </div>
+      ${aderencia !== null ? `
+      <div class="kpi">
+        <div class="kpi-label">Aderência</div>
+        <div class="kpi-value">${aderencia}<span class="unit">%</span></div>
+        <div class="kpi-sub">${treinos.length}/${treinosEsperados} esperados</div>
+      </div>` : `
+      <div class="kpi">
+        <div class="kpi-label">Aderência</div>
+        <div class="kpi-value" style="color:var(--muted)">—</div>
+        <div class="kpi-sub">Defina horários fixos</div>
+      </div>`}
+      <div class="kpi">
+        <div class="kpi-label">Faturamento</div>
+        <div class="kpi-value money">${formatBRL(treinos.length * alunoValorHora(aluno))}</div>
+        ${alunoValorHora(aluno) ? `<div class="kpi-sub">${formatBRL(alunoValorHora(aluno))}/h × ${treinos.length}</div>` : `<div class="kpi-sub">Defina valor/hora do aluno</div>`}
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Grupos únicos</div>
+        <div class="kpi-value">${muscleEntries.length}</div>
+      </div>
+    </div>
+
+    ${calendarPanel}
+
+    <div class="panel">
+      <div class="panel-title">Grupos musculares trabalhados</div>
+      ${renderMuscleBars(muscleEntries)}
+    </div>
+
+    ${gymEntries.length ? `
+    <div class="panel">
+      <div class="panel-title">Distribuição por academia</div>
+      ${renderGymList(gymEntries)}
+    </div>` : ''}
+
+    ${treinos.length ? `
+    <div class="panel">
+      <div class="panel-title">Lista de treinos no período</div>
+      ${renderTreinoList(treinos)}
+    </div>` : ''}
+  `;
+}
+
+/* ===== Relatório GERAL (todos os alunos) ===== */
+function renderReportGeneral(f, treinos) {
+  const alunosAtivos = new Set(treinos.map(t => String(t.AlunoId))).size;
+  const diasTreinados = new Set(treinos.map(t => t.Data)).size;
+  const totalDays = Math.max(1, daysBetween(f.range.from, f.range.to) + 1);
+
+  // Por aluno
+  const byAluno = {};
+  treinos.forEach(t => {
+    const id = String(t.AlunoId);
+    if (!byAluno[id]) byAluno[id] = { count: 0, days: new Set(), muscles: {} };
+    byAluno[id].count++;
+    byAluno[id].days.add(t.Data);
+    muscArray(t.Musculos).forEach(m => {
+      byAluno[id].muscles[m] = (byAluno[id].muscles[m] || 0) + 1;
+    });
+  });
+  const alunoRanking = Object.entries(byAluno)
+    .map(([id, data]) => {
+      const al = state.alunos.find(a => String(a.ID) === String(id));
+      const valor = alunoValorHora(al);
+      return {
+        id,
+        name: al?.Nome || 'Aluno removido',
+        count: data.count,
+        days: data.days.size,
+        valorHora: valor,
+        faturamento: valor * data.count,
+      };
+    })
+    .sort((a,b) => b.count - a.count);
+
+  const muscleEntries = aggregateMuscles(treinos);
+  const gymEntries    = aggregateGyms(treinos);
+
+  // Heatmap de carga diária (só faz sentido se for mês inteiro)
+  let calendarPanel = '';
+  if (f.isFullMonth) {
+    calendarPanel = renderMonthCalendarHeatmap(f, treinos, new Date());
+  } else {
+    calendarPanel = renderRangeStrip(f, treinos, true);
+  }
+
+  $('#reportContent').innerHTML = `
+    <div class="print-header">
+      <div class="ph-title">FitHub Personal · Relatório Geral</div>
+      <div class="ph-meta">
+        <strong>Todos os alunos</strong> ·
+        ${escapeHTML(f.label)} ·
+        gerado em ${fmtDate(todayISO())}
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Treinos no período</div>
+        <div class="kpi-value">${treinos.length}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Alunos ativos</div>
+        <div class="kpi-value">${alunosAtivos}<span class="unit">/${state.alunos.length}</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Dias com treinos</div>
+        <div class="kpi-value">${diasTreinados}<span class="unit">/${totalDays}</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Faturamento total</div>
+        <div class="kpi-value money">${formatBRL(faturamentoTreinos(treinos))}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Grupos únicos</div>
+        <div class="kpi-value">${muscleEntries.length}</div>
+      </div>
+    </div>
+
+    ${calendarPanel}
+
+    <div class="panel">
+      <div class="panel-title">Ranking de alunos por treinos</div>
+      ${alunoRanking.length ? renderAlunoRanking(alunoRanking) : '<div class="empty-sub" style="text-align:center">Sem treinos no período.</div>'}
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Grupos musculares (agregado)</div>
+      ${renderMuscleBars(muscleEntries)}
+    </div>
+
+    ${gymEntries.length ? `
+    <div class="panel">
+      <div class="panel-title">Distribuição por academia</div>
+      ${renderGymList(gymEntries)}
+    </div>` : ''}
+  `;
+}
+
+/* ===== Helpers de agregação e render ===== */
+
+function aggregateMuscles(treinos) {
+  const counts = {};
+  treinos.forEach(t => muscArray(t.Musculos).forEach(m => {
+    counts[m] = (counts[m] || 0) + 1;
+  }));
+  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+}
+function aggregateGyms(treinos) {
+  const counts = {};
+  treinos.forEach(t => {
+    counts[t.AcademiaId] = (counts[t.AcademiaId] || 0) + 1;
+  });
+  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+}
+
+function renderMuscleBars(entries) {
+  if (!entries.length) return `<div class="empty-sub" style="text-align:center">Nenhum grupo registrado.</div>`;
+  const max = entries[0][1];
+  return entries.map(([id, count]) => `
+    <div class="bar-row">
+      <div class="bar-label">${muscLabel(id)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(count/max)*100}%"></div></div>
+      <div class="bar-count">${count}</div>
+    </div>
+  `).join('');
+}
+
+function renderGymList(entries) {
+  return entries.map(([id, count]) => {
+    const ac = state.academias.find(a => String(a.ID) === String(id));
+    const cor = gymColor(ac?.Cor || 'lime').hex;
+    return `
+      <div class="gym-row">
+        <span class="gym-dot" style="background:${cor}"></span>
+        <span class="gym-row-name">${escapeHTML(ac?.Nome || 'Academia removida')}</span>
+        <span class="gym-row-count">${count} treino${count !== 1 ? 's' : ''}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAlunoRanking(ranking) {
+  const max = ranking[0]?.count || 1;
+  return `
+    <div class="ranking-list">
+      ${ranking.map(r => `
+        <div class="rank-row">
+          <div class="rank-top">
+            <span class="rank-name">${escapeHTML(r.name)}</span>
+            <span class="rank-stats">${r.count} treino${r.count !== 1 ? 's' : ''}${r.faturamento ? ` · <span class="money">${formatBRL(r.faturamento)}</span>` : ''}</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(r.count/max)*100}%"></div></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderTreinoList(treinos) {
+  const sorted = treinos.slice().sort((a,b) => String(a.Data).localeCompare(String(b.Data)) || String(a.Horario).localeCompare(String(b.Horario)));
+  return `<div class="treino-list">${sorted.map(t => {
+    const al = state.alunos.find(a => String(a.ID) === String(t.AlunoId));
+    const ac = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
+    const cor = gymColor(ac?.Cor || 'lime').hex;
+    const muscs = muscArray(t.Musculos).map(muscLabel).join(', ');
+    return `
+      <div class="treino-line">
+        <span class="treino-date">${fmtDate(t.Data)} ${t.Horario || ''}</span>
+        <span class="gym-dot" style="background:${cor}"></span>
+        <span class="treino-where">${escapeHTML(ac?.Nome || '—')}</span>
+        <span class="treino-musc">${muscs || '<em style="opacity:.5">sem grupos</em>'}</span>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function renderMonthCalendar(f, treinos, today) {
+  const trainedDays = new Set(treinos.map(t => Number(String(t.Data).split('-')[2])));
+  const firstWeekday = new Date(f.range.year, f.range.month - 1, 1).getDay();
+  const isCurrentMonth = (today.getFullYear() === f.range.year && today.getMonth() + 1 === f.range.month);
+
+  let calHTML = WEEKDAYS.map(w => `<div class="cal-head">${w.short}</div>`).join('');
+  for (let i = 0; i < firstWeekday; i++) calHTML += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= f.range.daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    const trained = trainedDays.has(d);
+    calHTML += `<div class="cal-day ${trained ? 'trained' : ''} ${isToday ? 'today' : ''}">${d}</div>`;
+  }
+  return `
+    <div class="panel">
+      <div class="panel-title">Calendário · ${escapeHTML(f.label)}</div>
+      <div class="calendar">${calHTML}</div>
+    </div>
+  `;
+}
+
+function heatClass(count, max) {
+  if (!count) return '';
+  const ratio = count / max;
+  if (ratio > 0.66) return 'heat-high';
+  if (ratio > 0.33) return 'heat-mid';
+  return 'heat-low';
+}
+
+function renderMonthCalendarHeatmap(f, treinos, today) {
+  // Heatmap: cor mais forte conforme número de treinos no dia
+  const dayCounts = {};
+  treinos.forEach(t => {
+    const d = Number(String(t.Data).split('-')[2]);
+    dayCounts[d] = (dayCounts[d] || 0) + 1;
+  });
+  const max = Math.max(1, ...Object.values(dayCounts));
+  const firstWeekday = new Date(f.range.year, f.range.month - 1, 1).getDay();
+  const isCurrentMonth = (today.getFullYear() === f.range.year && today.getMonth() + 1 === f.range.month);
+
+  let calHTML = WEEKDAYS.map(w => `<div class="cal-head">${w.short}</div>`).join('');
+  for (let i = 0; i < firstWeekday; i++) calHTML += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= f.range.daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    const count = dayCounts[d] || 0;
+    const hc = heatClass(count, max);
+    calHTML += `<div class="cal-day ${hc} ${isToday ? 'today' : ''}">${d}${count ? `<sub class="cal-count">·${count}</sub>` : ''}</div>`;
+  }
+  return `
+    <div class="panel">
+      <div class="panel-title">Carga por dia · ${escapeHTML(f.label)}</div>
+      <div class="calendar">${calHTML}</div>
+      <div class="heat-legend">
+        <span class="heat-swatch heat-low"></span> baixa
+        <span class="heat-swatch heat-mid"></span> média
+        <span class="heat-swatch heat-high"></span> alta
+      </div>
+    </div>
+  `;
+}
+
+function renderRangeStrip(f, treinos, withCount = false) {
+  // Strip horizontal de dias dentro do range com marcação onde teve treino
+  const days = [];
+  let cur = f.range.from;
+  let safety = 0;
+  while (cur <= f.range.to && safety < 400) {
+    days.push(cur);
+    cur = shiftDate(cur, 1);
+    safety++;
+  }
+  const dayCounts = {};
+  treinos.forEach(t => { dayCounts[t.Data] = (dayCounts[t.Data] || 0) + 1; });
+  const max = Math.max(1, ...Object.values(dayCounts));
+
+  const cells = days.map(iso => {
+    const count = dayCounts[iso] || 0;
+    const hc = heatClass(count, max);
+    const dd = iso.split('-')[2];
+    return `<div class="strip-day ${hc}" title="${fmtDate(iso)}${count ? ` · ${count} treino(s)` : ''}">${dd}${withCount && count ? `<sub class="cal-count">·${count}</sub>` : ''}</div>`;
+  }).join('');
+
+  return `
+    <div class="panel">
+      <div class="panel-title">Linha do tempo · ${escapeHTML(f.label)}</div>
+      <div class="strip">${cells}</div>
+    </div>
+  `;
+}
+
+function countExpectedInRange(horarios, fromISO, toISO, today) {
+  // Conta dias dentro do range cujo weekday bate com algum horário fixo,
+  // limitado a hoje (não conta futuro como esperado)
+  const weekdays = new Set(horarios.map(h => h.weekday));
+  let cur = fromISO;
+  let end = toISO;
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  if (end > todayIso) end = todayIso;
+  let count = 0, safety = 0;
+  while (cur <= end && safety < 400) {
+    const wd = weekdayFromISO(cur);
+    if (weekdays.has(wd)) count++;
+    cur = shiftDate(cur, 1);
+    safety++;
+  }
+  return count;
+}
+
+function daysBetween(fromISO, toISO) {
+  const [y1,m1,d1] = fromISO.split('-').map(Number);
+  const [y2,m2,d2] = toISO.split('-').map(Number);
+  const a = new Date(y1, m1-1, d1);
+  const b = new Date(y2, m2-1, d2);
+  return Math.round((b - a) / 86400000);
+}
+
+function countExpectedSessions(horarios, y, m, untilDay) {
+  let count = 0;
+  for (let d = 1; d <= untilDay; d++) {
+    const wd = new Date(y, m-1, d).getDay();
+    if (horarios.some(h => h.weekday === wd)) count++;
+  }
+  return count;
+}
+
+/* ===== Event handlers dos filtros ===== */
+$('#reportAluno').addEventListener('change', renderReportContent);
+$('#reportMonth').addEventListener('change', renderReportContent);
+$('#reportFrom').addEventListener('change', renderReportContent);
+$('#reportTo').addEventListener('change', renderReportContent);
+$('#reportPeriodMode').addEventListener('change', () => {
+  const isMonth = $('#reportPeriodMode').value === 'month';
+  $('#reportMonthGroup').style.display = isMonth ? '' : 'none';
+  $('#reportFromGroup').style.display  = isMonth ? 'none' : '';
+  $('#reportToGroup').style.display    = isMonth ? 'none' : '';
+  renderReportContent();
+});
+
+/* ===== Export PDF (geração direta sem diálogo de impressão) ===== */
+function slugify(s) {
+  return String(s || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // remove acentos
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+    .slice(0, 60) || 'relatorio';
+}
+
+$('#exportPdfBtn').addEventListener('click', async () => {
+  if (typeof html2pdf === 'undefined') {
+    return toast('Biblioteca PDF ainda carregando. Tente em 2 segundos.', 'error', 4000);
+  }
+
+  const f = getReportFilters();
+  const treinos = filterTreinos(f);
+  if (!treinos.length) {
+    return toast('Sem treinos no período selecionado.', 'error');
+  }
+
+  // Nome do arquivo
+  let nameSlug;
+  if (f.alunoId) {
+    const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
+    nameSlug = slugify(aluno?.Nome || 'aluno');
+  } else {
+    nameSlug = 'Geral';
+  }
+  const periodSlug = slugify(f.label);
+  const filename = `FitHub_${nameSlug}_${periodSlug}.pdf`;
+
+  showLoading(true);
+
+  // Clona o conteúdo do relatório num wrapper OFF-SCREEN de largura fixa.
+  // Isso garante escala correta pro A4 em qualquer dispositivo (desktop e iPhone
+  // ficam idênticos), em vez de depender da largura da viewport.
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'position:fixed;left:-10000px;top:0;width:760px;background:#ffffff;padding:18px;box-sizing:border-box;';
+  const clone = document.getElementById('reportContent').cloneNode(true);
+  clone.removeAttribute('id');
+  clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+  document.body.classList.add('pdf-active');
+
+  // espera fontes/layout assentarem
+  await new Promise(r => setTimeout(r, 200));
+
+  try {
+    const opts = {
+      margin:     [10, 10, 10, 10],
+      filename:   filename,
+      image:      { type: 'jpeg', quality: 0.95 },
+      html2canvas:{ scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false },
+      jsPDF:      { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak:  { mode: ['css', 'legacy'], avoid: '.panel, .kpi, .rank-row' },
+    };
+
+    // Gera o PDF como Blob (não dispara download ainda)
+    const blob = await html2pdf().set(opts).from(wrapper).outputPdf('blob');
+    const file = new File([blob], filename, { type: 'application/pdf' });
+
+    // Caminho 1: Web Share API com arquivo (iOS/Android modernos)
+    // — compartilha SÓ o PDF, sem o link blob que aparecia antes
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: filename });
+        toast('PDF pronto pra compartilhar.');
+        return;
+      } catch (shareErr) {
+        // usuário cancelou o share sheet — não é erro real
+        if (shareErr && shareErr.name === 'AbortError') return;
+        // se share falhar por outro motivo, cai pro download abaixo
+      }
+    }
+
+    // Caminho 2 (fallback desktop): download tradicional, com limpeza do blob URL
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('PDF gerado: ' + filename);
+  } catch (e) {
+    console.error(e);
+    toast('Erro ao gerar PDF: ' + (e.message || 'desconhecido'), 'error', 6000);
+  } finally {
+    if (wrapper.parentNode) document.body.removeChild(wrapper);
+    document.body.classList.remove('pdf-active');
+    showLoading(false);
+  }
+});
+
+$('#exportTextBtn').addEventListener('click', () => {
+  const f = getReportFilters();
+  const treinos = filterTreinos(f);
+  let lines;
+
+  if (f.alunoId) {
+    const aluno = state.alunos.find(a => String(a.ID) === String(f.alunoId));
+    const muscleEntries = aggregateMuscles(treinos);
+    const topMusculos = muscleEntries.slice(0,5).map(([id, c]) => `${muscLabel(id)} (${c})`).join(', ');
+    const valor = alunoValorHora(aluno);
+    const faturamento = valor * treinos.length;
+    lines = [
+      `📊 *${aluno?.Nome || 'Aluno'} · ${f.label}*`,
+      ``,
+      `Treinos: *${treinos.length}*`,
+      `Dias treinados: *${new Set(treinos.map(t => t.Data)).size}*`,
+      valor ? `Valor/hora: *${formatBRL(valor)}*` : null,
+      valor ? `Faturamento: *${formatBRL(faturamento)}*` : null,
+      topMusculos ? `Foco: ${topMusculos}` : null,
+      ``,
+      `_Datas:_`,
+      ...treinos
+        .slice()
+        .sort((a,b) => String(a.Data).localeCompare(String(b.Data)))
+        .map(t => {
+          const ac = state.academias.find(a => String(a.ID) === String(t.AcademiaId));
+          const muscs = muscArray(t.Musculos).slice(0,4).map(muscLabel).join(', ');
+          return `• ${fmtDate(t.Data)} ${t.Horario || ''} · ${ac?.Nome || '—'}${muscs ? ` · ${muscs}` : ''}`;
+        }),
+      ``,
+      `— enviado via FitHub Personal`,
+    ].filter(Boolean);
+  } else {
+    // Geral
+    const alunosAtivos = new Set(treinos.map(t => String(t.AlunoId))).size;
+    const byAluno = {};
+    treinos.forEach(t => {
+      const id = String(t.AlunoId);
+      byAluno[id] = (byAluno[id] || 0) + 1;
+    });
+    const rank = Object.entries(byAluno)
+      .map(([id, c]) => {
+        const al = state.alunos.find(a => String(a.ID) === String(id));
+        const valor = alunoValorHora(al);
+        return { name: al?.Nome || 'Aluno removido', count: c, faturamento: valor * c };
+      })
+      .sort((a,b) => b.count - a.count);
+    const faturamentoTotal = rank.reduce((s, r) => s + r.faturamento, 0);
+    lines = [
+      `📊 *Relatório Geral · ${f.label}*`,
+      ``,
+      `Treinos totais: *${treinos.length}*`,
+      `Alunos ativos: *${alunosAtivos}/${state.alunos.length}*`,
+      `Dias com treinos: *${new Set(treinos.map(t => t.Data)).size}*`,
+      faturamentoTotal ? `Faturamento total: *${formatBRL(faturamentoTotal)}*` : null,
+      ``,
+      `_Por aluno:_`,
+      ...rank.map(r => `• ${r.name} — ${r.count} treino${r.count !== 1 ? 's' : ''}${r.faturamento ? ` · ${formatBRL(r.faturamento)}` : ''}`),
+      ``,
+      `— enviado via FitHub Personal`,
+    ].filter(Boolean);
+  }
+
+  $('#exportText').textContent = lines.join('\n');
+  openModal('export');
+});
+$('#copyExport').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('#exportText').textContent);
+    toast('Texto copiado.');
+  } catch {
+    toast('Não foi possível copiar. Selecione e copie manualmente.', 'error');
+  }
+});
+
+/* ===================== MODAL CLOSE HANDLERS ===================== */
+$$('[data-close]').forEach(b => b.addEventListener('click', closeAllModals));
+$$('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', (e) => {
+    if (e.target === ov) closeAllModals();
+  });
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllModals();
+});
+
+/* ===================== BOOT ===================== */
+setDate(todayISO());
+loadAll();
+</script>
+
+</body>
+</html>
